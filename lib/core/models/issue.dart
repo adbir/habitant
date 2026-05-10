@@ -1,3 +1,4 @@
+import 'issue_comment.dart';
 import 'maintenance_update.dart';
 
 enum IssueStatus {
@@ -26,10 +27,22 @@ class Issue {
   final String description;
   final List<String> photoUrls;
   final IssueStatus status;
-  final bool needsOutsideHelp;
-  final bool tooComplexForMaintenance;
+
+  /// Set by admin when the issue requires intervention beyond what
+  /// maintenance staff can handle on their own.
+  final bool needAssistance;
+
+  /// Alternative contact phone for whoever will be home during the visit
+  /// (e.g. a spouse or room mate). Null if the tenant's own number is used.
+  final String? alternativeContactPhone;
+
   final String? maintenanceStaffId;
+
+  /// First name of the assigned maintenance worker, denormalized from the
+  /// staff profile so callers don't need a separate lookup.
+  final String? assignedToName;
   final List<MaintenanceUpdate> updates;
+  final List<IssueComment> comments;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -41,10 +54,12 @@ class Issue {
     required this.description,
     required this.photoUrls,
     required this.status,
-    required this.needsOutsideHelp,
-    required this.tooComplexForMaintenance,
+    required this.needAssistance,
+    this.alternativeContactPhone,
     this.maintenanceStaffId,
+    this.assignedToName,
     required this.updates,
+    required this.comments,
     required this.createdAt,
     this.updatedAt,
   });
@@ -57,10 +72,12 @@ class Issue {
     String? description,
     List<String>? photoUrls,
     IssueStatus? status,
-    bool? needsOutsideHelp,
-    bool? tooComplexForMaintenance,
+    bool? needAssistance,
+    String? alternativeContactPhone,
     String? maintenanceStaffId,
+    String? assignedToName,
     List<MaintenanceUpdate>? updates,
+    List<IssueComment>? comments,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -72,11 +89,13 @@ class Issue {
       description: description ?? this.description,
       photoUrls: photoUrls ?? this.photoUrls,
       status: status ?? this.status,
-      needsOutsideHelp: needsOutsideHelp ?? this.needsOutsideHelp,
-      tooComplexForMaintenance:
-          tooComplexForMaintenance ?? this.tooComplexForMaintenance,
+      needAssistance: needAssistance ?? this.needAssistance,
+      alternativeContactPhone:
+          alternativeContactPhone ?? this.alternativeContactPhone,
       maintenanceStaffId: maintenanceStaffId ?? this.maintenanceStaffId,
+      assignedToName: assignedToName ?? this.assignedToName,
       updates: updates ?? this.updates,
+      comments: comments ?? this.comments,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -94,12 +113,15 @@ class Issue {
         (e) => e.name == json['status'],
         orElse: () => IssueStatus.pending,
       ),
-      needsOutsideHelp: json['needsOutsideHelp'] as bool? ?? false,
-      tooComplexForMaintenance:
-          json['tooComplexForMaintenance'] as bool? ?? false,
+      needAssistance: json['needAssistance'] as bool? ?? false,
+      alternativeContactPhone: json['alternativeContactPhone'] as String?,
       maintenanceStaffId: json['maintenanceStaffId'] as String?,
+      assignedToName: json['assignedToName'] as String?,
       updates: (json['updates'] as List<dynamic>? ?? [])
           .map((u) => MaintenanceUpdate.fromJson(u as Map<String, dynamic>))
+          .toList(),
+      comments: (json['comments'] as List<dynamic>? ?? [])
+          .map((c) => IssueComment.fromJson(c as Map<String, dynamic>))
           .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] != null
@@ -116,10 +138,12 @@ class Issue {
         'description': description,
         'photoUrls': photoUrls,
         'status': status.name,
-        'needsOutsideHelp': needsOutsideHelp,
-        'tooComplexForMaintenance': tooComplexForMaintenance,
+        'needAssistance': needAssistance,
+        'alternativeContactPhone': alternativeContactPhone,
         'maintenanceStaffId': maintenanceStaffId,
+        'assignedToName': assignedToName,
         'updates': updates.map((u) => u.toJson()).toList(),
+        'comments': comments.map((c) => c.toJson()).toList(),
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
       };

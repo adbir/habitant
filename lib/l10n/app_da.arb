@@ -1,0 +1,92 @@
+{
+  "@@locale": "da",
+
+  "appName": "Habitant",
+  "appTagline": "Boligadministration",
+
+  "emailLabel": "E-mail",
+  "passwordLabel": "Adgangskode",
+  "loginButton": "Log ind",
+  "createAccountLink": "Opret konto",
+
+  "errorEmptyFields": "Udfyld venligst alle felter.",
+  "errorInvalidCredentials": "Forkert e-mail eller adgangskode.",
+  "errorGeneric": "Noget gik galt. Prøv venligst igen.",
+
+  "nextButton": "Næste",
+  "confirmPasswordLabel": "Bekræft adgangskode",
+  "phoneLabel": "Telefonnummer (valgfrit)",
+  "signupTitle": "Opret konto",
+  "errorPasswordMismatch": "Adgangskoderne stemmer ikke overens.",
+  "errorPasswordTooShort": "Adgangskoden skal være mindst 8 tegn.",
+  "errorEmailTaken": "Der findes allerede en konto med denne e-mail.",
+
+  "verifyEmailTitle": "Tjek din e-mail",
+  "verifyEmailSentTo": "Vi har sendt en 6-cifret kode til {email}",
+  "@verifyEmailSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyButton": "Bekræft",
+  "resendCode": "Send kode igen",
+  "errorInvalidCode": "Koden er forkert. Prøv venligst igen.",
+
+  "pickHousingTitle": "Vælg din boligforening",
+  "pickHousingSubtitle": "Vælg den boligforening du bor i",
+  "pickAddressTitle": "Vælg din adresse",
+  "pickAddressSubtitle": "Vælg din lejlighed",
+  "noAddressesAvailable": "Ingen ledige adresser i denne boligforening.",
+
+  "alreadyHaveAccount": "Har du allerede en konto?",
+  "loginLink": "Log ind",
+
+  "issueStatusPending": "Afventer",
+  "issueStatusAssigned": "Tildelt",
+  "issueStatusInProgress": "I gang",
+  "issueStatusCompleted": "Afsluttet",
+  "issueStatusRejected": "Afvist",
+  "needsAssistanceLabel": "Kræver hjælp",
+
+  "myIssues": "Mine meldinger",
+  "noIssuesYet": "Ingen meldinger endnu",
+  "noIssuesYetSubtitle": "Tryk på knappen nedenfor for at melde et problem i din bolig.",
+  "reportIssueTooltip": "Meld problem",
+
+  "today": "I dag",
+  "yesterday": "I går",
+  "daysAgo": "For {count} dage siden",
+  "@daysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorRetry": "Prøv igen",
+  "errorLoadFailed": "Kunne ikke hente dine data. Prøv venligst igen.",
+
+  "reportIssueTitle": "Meld problem",
+  "descriptionLabel": "Beskrivelse",
+  "descriptionHint": "Beskriv problemet i detaljer...",
+  "submitIssueButton": "Send melding",
+  "alternativeContactHint": "Hvis vi skal tale med en anden end dig om problemet, bedes du efterlade vedkommendes telefonnummer nedenfor.",
+  "alternativeContactPhoneLabel": "Alternativt telefonnummer (valgfrit)",
+  "errorDescriptionEmpty": "Beskriv venligst problemet.",
+
+  "maintenanceTitle": "Sager",
+  "filterAll": "Alle",
+  "noIssuesFound": "Ingen sager",
+  "issueDetailTitle": "Sag",
+  "addressSection": "Adresse",
+  "alternativePhoneLabel": "Alternativ kontakt",
+  "commentsSection": "Kommentarer",
+  "maintenanceUpdatesSection": "Opdateringer",
+  "noCommentsYet": "Ingen kommentarer endnu",
+  "noUpdatesYet": "Ingen opdateringer endnu",
+  "internalCommentLabel": "Intern",
+  "publicCommentLabel": "Offentlig",
+  "commentHint": "Skriv en kommentar...",
+  "internalNoteToggle": "Internt notat",
+  "sendButton": "Send",
+  "logoutTooltip": "Log ud"
+}

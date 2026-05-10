@@ -1,58 +1,56 @@
-import 'tenant_address.dart';
-
 class TenantProfile {
   final String id;
   final String email;
-  final String currentHousingId;
-  final String currentFavoriteAddressId;
-  final List<TenantAddress> addressHistory;
+
+  /// Contact phone number supplied during signup. Optional.
+  final String? phoneNumber;
+
+  /// Null until the tenant selects a housing after first login.
+  final String? currentHousingId;
+
+  /// Null until the tenant selects an address within their housing.
+  final String? currentAddressId;
+
   final DateTime createdAt;
 
   const TenantProfile({
     required this.id,
     required this.email,
-    required this.currentHousingId,
-    required this.currentFavoriteAddressId,
-    required this.addressHistory,
+    this.phoneNumber,
+    this.currentHousingId,
+    this.currentAddressId,
     required this.createdAt,
   });
+
+  /// Whether the tenant has completed onboarding (housing + address selected).
+  bool get isOnboarded =>
+      currentHousingId != null && currentAddressId != null;
 
   TenantProfile copyWith({
     String? id,
     String? email,
+    String? phoneNumber,
     String? currentHousingId,
-    String? currentFavoriteAddressId,
-    List<TenantAddress>? addressHistory,
+    String? currentAddressId,
     DateTime? createdAt,
   }) {
     return TenantProfile(
       id: id ?? this.id,
       email: email ?? this.email,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       currentHousingId: currentHousingId ?? this.currentHousingId,
-      currentFavoriteAddressId:
-          currentFavoriteAddressId ?? this.currentFavoriteAddressId,
-      addressHistory: addressHistory ?? this.addressHistory,
+      currentAddressId: currentAddressId ?? this.currentAddressId,
       createdAt: createdAt ?? this.createdAt,
     );
   }
-
-  TenantAddress get currentFavoriteAddress =>
-      addressHistory.firstWhere(
-        (addr) => addr.id == currentFavoriteAddressId,
-        orElse: () => throw StateError('Current address not found'),
-      );
 
   factory TenantProfile.fromJson(Map<String, dynamic> json) {
     return TenantProfile(
       id: json['id'] as String,
       email: json['email'] as String,
-      currentHousingId: json['currentHousingId'] as String,
-      currentFavoriteAddressId: json['currentFavoriteAddressId'] as String,
-      addressHistory: (json['addressHistory'] as List<dynamic>)
-          .map(
-            (addr) => TenantAddress.fromJson(addr as Map<String, dynamic>),
-          )
-          .toList(),
+      phoneNumber: json['phoneNumber'] as String?,
+      currentHousingId: json['currentHousingId'] as String?,
+      currentAddressId: json['currentAddressId'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
@@ -60,9 +58,9 @@ class TenantProfile {
   Map<String, dynamic> toJson() => {
         'id': id,
         'email': email,
+        'phoneNumber': phoneNumber,
         'currentHousingId': currentHousingId,
-        'currentFavoriteAddressId': currentFavoriteAddressId,
-        'addressHistory': addressHistory.map((addr) => addr.toJson()).toList(),
+        'currentAddressId': currentAddressId,
         'createdAt': createdAt.toIso8601String(),
       };
 }

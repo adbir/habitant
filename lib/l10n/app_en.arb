@@ -1,0 +1,92 @@
+{
+  "@@locale": "en",
+
+  "appName": "Habitant",
+  "appTagline": "Housing administration",
+
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "loginButton": "Log in",
+  "createAccountLink": "Create account",
+
+  "errorEmptyFields": "Please fill in all fields.",
+  "errorInvalidCredentials": "Incorrect email or password.",
+  "errorGeneric": "Something went wrong. Please try again.",
+
+  "nextButton": "Next",
+  "confirmPasswordLabel": "Confirm password",
+  "phoneLabel": "Phone number (optional)",
+  "signupTitle": "Create account",
+  "errorPasswordMismatch": "Passwords do not match.",
+  "errorPasswordTooShort": "Password must be at least 8 characters.",
+  "errorEmailTaken": "An account with this email already exists.",
+
+  "verifyEmailTitle": "Check your email",
+  "verifyEmailSentTo": "We sent a 6-digit code to {email}",
+  "@verifyEmailSentTo": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+  "verifyButton": "Verify",
+  "resendCode": "Resend code",
+  "errorInvalidCode": "That code isn't right. Please try again.",
+
+  "pickHousingTitle": "Select your housing",
+  "pickHousingSubtitle": "Choose the housing association you live in",
+  "pickAddressTitle": "Select your address",
+  "pickAddressSubtitle": "Choose your apartment",
+  "noAddressesAvailable": "No available addresses in this housing.",
+
+  "alreadyHaveAccount": "Already have an account?",
+  "loginLink": "Log in",
+
+  "issueStatusPending": "Pending",
+  "issueStatusAssigned": "Assigned",
+  "issueStatusInProgress": "In progress",
+  "issueStatusCompleted": "Completed",
+  "issueStatusRejected": "Rejected",
+  "needsAssistanceLabel": "Needs assistance",
+
+  "myIssues": "My issues",
+  "noIssuesYet": "No issues reported",
+  "noIssuesYetSubtitle": "Tap the button below to report a problem in your home.",
+  "reportIssueTooltip": "Report issue",
+
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "errorRetry": "Retry",
+  "errorLoadFailed": "Could not load your data. Please try again.",
+
+  "reportIssueTitle": "Report issue",
+  "descriptionLabel": "Description",
+  "descriptionHint": "Describe the problem in detail...",
+  "submitIssueButton": "Submit report",
+  "alternativeContactHint": "If we need to talk to someone else than you about the issue, please leave their phone number below.",
+  "alternativeContactPhoneLabel": "Alternative phone number (optional)",
+  "errorDescriptionEmpty": "Please describe the problem.",
+
+  "maintenanceTitle": "Issues",
+  "filterAll": "All",
+  "noIssuesFound": "No issues",
+  "issueDetailTitle": "Issue",
+  "addressSection": "Location",
+  "alternativePhoneLabel": "Alternative contact",
+  "commentsSection": "Comments",
+  "maintenanceUpdatesSection": "Updates",
+  "noCommentsYet": "No comments yet",
+  "noUpdatesYet": "No updates yet",
+  "internalCommentLabel": "Internal",
+  "publicCommentLabel": "Public",
+  "commentHint": "Write a comment...",
+  "internalNoteToggle": "Internal note",
+  "sendButton": "Send",
+  "logoutTooltip": "Log out"
+}

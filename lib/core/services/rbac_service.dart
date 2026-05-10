@@ -16,9 +16,9 @@ class RbacService {
     return role.isHousingManager || role.isRootAdmin;
   }
 
-  /// Check if user role can mark issues for outside help
-  bool canMarkForOutsideHelp(UserRole role) {
-    return role.isAdmin || role.isRootAdmin;
+  /// Check if user role can flag an issue as needing assistance
+  bool canMarkNeedsAssistance(UserRole role) {
+    return role.isMaintenance || role.isAdmin || role.isRootAdmin;
   }
 
   /// Check if user role can mark tenant as moved out

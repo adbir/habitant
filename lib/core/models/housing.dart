@@ -1,32 +1,33 @@
+import 'address.dart';
 import 'user_role.dart';
 
 class Housing {
   final String id;
   final String name;
-  final String domain;
   final String city;
+  final List<Address> addresses;
   final DateTime createdAt;
 
   const Housing({
     required this.id,
     required this.name,
-    required this.domain,
     required this.city,
+    required this.addresses,
     required this.createdAt,
   });
 
   Housing copyWith({
     String? id,
     String? name,
-    String? domain,
     String? city,
+    List<Address>? addresses,
     DateTime? createdAt,
   }) {
     return Housing(
       id: id ?? this.id,
       name: name ?? this.name,
-      domain: domain ?? this.domain,
       city: city ?? this.city,
+      addresses: addresses ?? this.addresses,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -35,8 +36,10 @@ class Housing {
     return Housing(
       id: json['id'] as String,
       name: json['name'] as String,
-      domain: json['domain'] as String,
       city: json['city'] as String,
+      addresses: (json['addresses'] as List<dynamic>? ?? [])
+          .map((a) => Address.fromJson(a as Map<String, dynamic>))
+          .toList(),
       createdAt: DateTime.parse(json['createdAt'] as String),
     );
   }
@@ -44,8 +47,8 @@ class Housing {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'domain': domain,
         'city': city,
+        'addresses': addresses.map((a) => a.toJson()).toList(),
         'createdAt': createdAt.toIso8601String(),
       };
 }
