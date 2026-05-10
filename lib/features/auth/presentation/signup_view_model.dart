@@ -1,7 +1,7 @@
-import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../core/models/address.dart';
 import '../../../core/models/housing.dart';
@@ -23,10 +23,9 @@ enum SignupError {
 
 /// Orchestrates the four-step signup wizard.
 ///
-/// The JWT received after email verification is held internally until the
-/// tenant finishes picking housing and address, at which point it is handed
-/// to [AuthService]. This prevents GoRouter from firing a redirect
-/// mid-wizard.
+/// After OTP verification Supabase creates the session, but [AuthService]
+/// keeps [role] null until [signupComplete] is called at the end of the
+/// wizard. This prevents [GoRouter] from redirecting mid-wizard.
 class SignupViewModel extends ChangeNotifier {
   final ApiClient _apiClient;
   final AuthService _authService;
@@ -36,9 +35,11 @@ class SignupViewModel extends ChangeNotifier {
   SignupError? _error;
 
   String _email = '';
-  String? _pendingJwt;
+  String? _phoneNumber;
   List<Housing> _housings = const [];
   Housing? _selectedHousing;
+
+  static SupabaseClient get _client => Supabase.instance.client;
 
   SignupViewModel({
     required ApiClient apiClient,
@@ -78,33 +79,40 @@ class SignupViewModel extends ChangeNotifier {
       return;
     }
 
-    await _run(() async {
-      await _apiClient.signup(
-        email,
-        password,
-        phoneNumber: phoneNumber?.isEmpty == true ? null : phoneNumber,
-      );
-      _email = email;
-      _step = SignupStep.verification;
-    }, on409: SignupError.emailTaken);
+    await _run(
+      () async {
+        await _client.auth.signUp(email: email, password: password);
+        _email = email;
+        _phoneNumber =
+            phoneNumber != null && phoneNumber.isNotEmpty ? phoneNumber : null;
+        _step = SignupStep.verification;
+      },
+      onEmailTaken: SignupError.emailTaken,
+    );
   }
 
   // ---- Step 2 ---------------------------------------------------------------
 
   Future<void> submitCode(String code) async {
-    await _run(() async {
-      final jwt = await _apiClient.verifyEmail(_email, code);
-      _pendingJwt = jwt;
-      _housings = await _apiClient.getHousings();
-      _step = SignupStep.housing;
-    }, on422: SignupError.invalidCode);
+    await _run(
+      () async {
+        await _client.auth.verifyOTP(
+          email: _email,
+          token: code,
+          type: OtpType.email,
+        );
+        _housings = await _apiClient.getHousings();
+        _step = SignupStep.housing;
+      },
+      onInvalidCode: SignupError.invalidCode,
+    );
   }
 
   Future<void> resendCode() async {
     _isLoading = true;
     notifyListeners();
     try {
-      await _apiClient.resendVerificationCode(_email);
+      await _client.auth.resend(type: OtpType.email, email: _email);
     } catch (_) {
       // Best-effort — don't surface resend errors.
     } finally {
@@ -125,31 +133,26 @@ class SignupViewModel extends ChangeNotifier {
   // ---- Step 4 ---------------------------------------------------------------
 
   Future<void> selectAddress(Address address) async {
-    final jwt = _pendingJwt;
     final housing = _selectedHousing;
-    if (jwt == null || housing == null) return;
-
-    final tenantId = _subFromJwt(jwt);
-    if (tenantId == null) {
-      _setError(SignupError.generic);
-      return;
-    }
+    if (housing == null) return;
 
     await _run(() async {
-      _apiClient.authToken = jwt;
-      await _apiClient.setTenantHousingAddress(
-        tenantId,
-        housing.id,
-        address.id,
-      );
-      await _authService.signupComplete(jwt);
+      final userId = _client.auth.currentUser!.id;
+      await _client.from('tenant').insert({
+        'tenant_id': userId,
+        'email': _email,
+        if (_phoneNumber != null) 'phone_number': _phoneNumber,
+        'current_housing_id': housing.id,
+        'current_address_id': address.id,
+        'tenant_flags': 1, // bit 0 = is_onboarded
+      });
+      await _authService.signupComplete();
       // GoRouter redirect takes over from here.
     });
   }
 
   // ---- Navigation -----------------------------------------------------------
 
-  /// Navigates back from the address step to the housing step.
   void goBack() {
     if (_step == SignupStep.address) {
       _step = SignupStep.housing;
@@ -160,23 +163,29 @@ class SignupViewModel extends ChangeNotifier {
 
   // ---- Helpers --------------------------------------------------------------
 
-  /// Runs [action] with loading state, catching [ApiException]s.
   Future<void> _run(
     Future<void> Function() action, {
-    SignupError? on409,
-    SignupError? on422,
+    SignupError? onEmailTaken,
+    SignupError? onInvalidCode,
   }) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
     try {
       await action();
-    } on ApiException catch (e) {
-      _error = switch (e.statusCode) {
-        409 => on409 ?? SignupError.generic,
-        422 => on422 ?? SignupError.generic,
-        _ => SignupError.generic,
-      };
+    } on AuthException catch (e) {
+      final msg = e.message.toLowerCase();
+      if (msg.contains('already registered') || msg.contains('already been registered')) {
+        _error = onEmailTaken ?? SignupError.generic;
+      } else if (msg.contains('expired') || msg.contains('invalid')) {
+        _error = onInvalidCode ?? SignupError.generic;
+      } else {
+        _error = SignupError.generic;
+      }
+    } on PostgrestException catch (e) {
+      _error = e.code == '23505'
+          ? (onEmailTaken ?? SignupError.generic)
+          : SignupError.generic;
     } catch (e, s) {
       developer.log(
         'Signup step failed',
@@ -195,18 +204,5 @@ class SignupViewModel extends ChangeNotifier {
   void _setError(SignupError error) {
     _error = error;
     notifyListeners();
-  }
-
-  String? _subFromJwt(String token) {
-    try {
-      final parts = token.split('.');
-      if (parts.length != 3) return null;
-      final payload = jsonDecode(
-        utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))),
-      ) as Map<String, dynamic>;
-      return payload['sub'] as String?;
-    } catch (_) {
-      return null;
-    }
   }
 }

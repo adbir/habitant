@@ -56,7 +56,7 @@ modified
 <table>_flags     — always last
 ```
 
-Authentication is JWT-based. The `sub` claim in the token holds the user's UUID. Both `tenant` and `staff_user` tables store a `password_hash`; the API is responsible for issuing tokens after credential verification.
+Authentication is handled by **Supabase Auth**. Supabase maintains `auth.users` and is solely responsible for password hashing (bcrypt + salt), OTP email verification, JWT issuance, and session refresh. Application tables never store password material. Both `tenant.tenant_id` and `staff_user.staff_user_id` are primary keys that equal `auth.users.id`, enforced by a foreign key. The JWT `sub` claim holds this UUID and is used throughout the API for identity.
 
 ---
 
@@ -192,24 +192,22 @@ All staff accounts. `role` determines API access and what the app shows.
 
 | Column | Type | Nullable | Description |
 |---|---|---|---|
-| `staff_user_id` | `UUID` | NO | Primary key |
-| `email` | `TEXT` | NO | Unique login email |
+| `staff_user_id` | `UUID` | NO | Primary key — equals `auth.users.id` |
+| `email` | `TEXT` | NO | Mirrors `auth.users.email`; kept for query convenience |
 | `name` | `TEXT` | NO | Full display name |
 | `first_name` | `VARCHAR(64)` | NO | Shown to tenants on assigned issues |
 | `role` | `user_role` | NO | Enum — see [Enum Reference](#enum-reference) |
-| `password_hash` | `TEXT` | NO | `argon2id` or `bcrypt` hash |
 | `created` | `TIMESTAMPTZ` | NO | |
 | `modified` | `TIMESTAMPTZ` | NO | |
 | `staff_user_flags` | `BIGINT` | NO | Bit 0: `is_active` |
 
 ```sql
 CREATE TABLE staff_user (
-  staff_user_id    UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  staff_user_id    UUID         NOT NULL PRIMARY KEY REFERENCES auth.users (id) ON DELETE CASCADE,
   email            TEXT         NOT NULL UNIQUE,
   name             TEXT         NOT NULL,
   first_name       VARCHAR(64)  NOT NULL,
   role             user_role    NOT NULL,
-  password_hash    TEXT         NOT NULL,
   created          TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   modified         TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   staff_user_flags BIGINT       NOT NULL DEFAULT 0
@@ -265,10 +263,9 @@ null.
 
 | Column | Type | Nullable | Description |
 |---|---|---|---|
-| `tenant_id` | `UUID` | NO | Primary key |
-| `email` | `TEXT` | NO | Unique login email |
+| `tenant_id` | `UUID` | NO | Primary key — equals `auth.users.id` |
+| `email` | `TEXT` | NO | Mirrors `auth.users.email`; kept for query convenience |
 | `phone_number` | `VARCHAR(32)` | YES | Contact number supplied at signup |
-| `password_hash` | `TEXT` | NO | `argon2id` or `bcrypt` hash |
 | `created` | `TIMESTAMPTZ` | NO | |
 | `modified` | `TIMESTAMPTZ` | NO | |
 | `current_housing_id` | `UUID` | YES | FK → `housing`; null until onboarded |
@@ -277,10 +274,9 @@ null.
 
 ```sql
 CREATE TABLE tenant (
-  tenant_id          UUID         NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
+  tenant_id          UUID         NOT NULL PRIMARY KEY REFERENCES auth.users (id) ON DELETE CASCADE,
   email              TEXT         NOT NULL UNIQUE,
   phone_number       VARCHAR(32),
-  password_hash      TEXT         NOT NULL,
   created            TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   modified           TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
   current_housing_id UUID         REFERENCES housing (housing_id),

@@ -398,6 +398,12 @@ abstract class AppLocalizations {
   /// **'Please describe the problem.'**
   String get errorDescriptionEmpty;
 
+  /// No description provided for @errorPhotoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'One or more photos failed to upload. Remove them and try again.'**
+  String get errorPhotoUploadFailed;
+
   /// No description provided for @maintenanceTitle.
   ///
   /// In en, this message translates to:

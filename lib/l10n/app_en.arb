@@ -72,6 +72,7 @@
   "alternativeContactHint": "If we need to talk to someone else than you about the issue, please leave their phone number below.",
   "alternativeContactPhoneLabel": "Alternative phone number (optional)",
   "errorDescriptionEmpty": "Please describe the problem.",
+  "errorPhotoUploadFailed": "One or more photos failed to upload. Remove them and try again.",
 
   "maintenanceTitle": "Issues",
   "filterAll": "All",

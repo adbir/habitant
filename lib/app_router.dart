@@ -108,6 +108,7 @@ class AppRouter {
 
   String? _redirect(BuildContext context, GoRouterState state) {
     final isAuth = _authService.isAuthenticated;
+    final role = _authService.role;
     final location = state.matchedLocation;
     final publicRoutes = {'/login', '/signup'};
 
@@ -115,9 +116,14 @@ class AppRouter {
       return publicRoutes.contains(location) ? null : '/login';
     }
 
-    // Authenticated — redirect away from auth screens.
+    // Authenticated but no profile row yet — user is mid-signup wizard.
+    if (role == null) {
+      return location == '/signup' ? null : '/signup';
+    }
+
+    // Authenticated with a profile — redirect away from auth screens.
     if (publicRoutes.contains(location)) {
-      return _authService.role?.isStaff == true ? '/staff' : '/tenant';
+      return role.isStaff ? '/staff' : '/tenant';
     }
 
     return null;

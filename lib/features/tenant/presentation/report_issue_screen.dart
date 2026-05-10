@@ -1,5 +1,4 @@
 import 'dart:developer' as developer;
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -65,7 +64,7 @@ class _ReportIssueScreenState extends State<ReportIssueScreen> {
       final picked = await ImagePicker().pickMultiImage();
       if (picked.isEmpty) return;
       final photos = await Future.wait(
-        picked.map((f) async => (await f.readAsBytes(), f.name)),
+        picked.map((f) async => ((await f.readAsBytes()), f.name)),
       );
       _viewModel.addPhotos(photos);
     } catch (e, s) {
@@ -210,6 +209,7 @@ class _IssueForm extends StatelessWidget {
   String _errorText(AppLocalizations l10n, ReportIssueError error) =>
       switch (error) {
         ReportIssueError.descriptionEmpty => l10n.errorDescriptionEmpty,
+        ReportIssueError.uploadFailed => l10n.errorPhotoUploadFailed,
         ReportIssueError.generic => l10n.errorGeneric,
       };
 }
@@ -239,7 +239,7 @@ class _PhotoSection extends StatelessWidget {
       children: [
         for (var i = 0; i < photos.length; i++)
           _PhotoTile(
-            bytes: photos[i].$1,
+            photo: photos[i],
             onRemove: isLoading ? null : () => onRemove(i),
           ),
         if (canAdd && !isLoading) _AddPhotoTile(onTap: onAdd),
@@ -249,10 +249,10 @@ class _PhotoSection extends StatelessWidget {
 }
 
 class _PhotoTile extends StatelessWidget {
-  final Uint8List bytes;
+  final SelectedPhoto photo;
   final VoidCallback? onRemove;
 
-  const _PhotoTile({required this.bytes, required this.onRemove});
+  const _PhotoTile({required this.photo, required this.onRemove});
 
   @override
   Widget build(BuildContext context) {
@@ -264,8 +264,10 @@ class _PhotoTile extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.memory(bytes, fit: BoxFit.cover),
+            child: Image.memory(photo.previewBytes, fit: BoxFit.cover),
           ),
+          if (photo.status != PhotoUploadStatus.done)
+            _UploadOverlay(status: photo.status),
           if (onRemove != null)
             Positioned(
               top: 4,
@@ -287,6 +289,41 @@ class _PhotoTile extends StatelessWidget {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _UploadOverlay extends StatelessWidget {
+  final PhotoUploadStatus status;
+
+  const _UploadOverlay({required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final isFailed = status == PhotoUploadStatus.failed;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: ColoredBox(
+        color: isFailed
+            ? Colors.red.withValues(alpha: 0.5)
+            : Colors.black.withValues(alpha: 0.4),
+        child: Center(
+          child: isFailed
+              ? const Icon(
+                  Icons.error_outline,
+                  color: Colors.white,
+                  size: 32,
+                )
+              : const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: Colors.white,
+                  ),
+                ),
+        ),
       ),
     );
   }

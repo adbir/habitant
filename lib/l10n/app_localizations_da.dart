@@ -169,6 +169,10 @@ class AppLocalizationsDa extends AppLocalizations {
   String get errorDescriptionEmpty => 'Beskriv venligst problemet.';
 
   @override
+  String get errorPhotoUploadFailed =>
+      'Et eller flere billeder kunne ikke uploades. Fjern dem og prøv igen.';
+
+  @override
   String get maintenanceTitle => 'Sager';
 
   @override

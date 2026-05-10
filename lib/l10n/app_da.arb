@@ -72,6 +72,7 @@
   "alternativeContactHint": "Hvis vi skal tale med en anden end dig om problemet, bedes du efterlade vedkommendes telefonnummer nedenfor.",
   "alternativeContactPhoneLabel": "Alternativt telefonnummer (valgfrit)",
   "errorDescriptionEmpty": "Beskriv venligst problemet.",
+  "errorPhotoUploadFailed": "Et eller flere billeder kunne ikke uploades. Fjern dem og prøv igen.",
 
   "maintenanceTitle": "Sager",
   "filterAll": "Alle",

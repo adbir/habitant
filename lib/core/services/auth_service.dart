@@ -1,137 +1,146 @@
-import 'dart:convert';
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/user_role.dart';
-import '../storage/token_storage.dart';
-import '../storage/token_storage_io.dart'
-    if (dart.library.html) '../storage/token_storage_web.dart';
-import 'api_client.dart';
 
-/// Manages authentication state and JWT persistence.
+/// Manages authentication state using Supabase Auth.
 ///
-/// Notifies listeners on login/logout so GoRouter can redirect accordingly.
-/// Inject a shared [ApiClient] instance; [AuthService] keeps its [authToken]
-/// in sync automatically.
+/// Listens to the Supabase auth state stream and resolves the user's
+/// application role by checking [staff_user] or [tenant] tables.
+/// Notifies listeners on every auth change so [GoRouter] can redirect.
 class AuthService extends ChangeNotifier {
-  final ApiClient _apiClient;
-  final TokenStorage _storage;
-
-  String? _token;
   UserRole? _role;
+  StreamSubscription<AuthState>? _authSubscription;
 
-  AuthService({required ApiClient apiClient})
-      : _apiClient = apiClient,
-        _storage = createTokenStorage();
+  static SupabaseClient get _client => Supabase.instance.client;
 
-  /// Whether the user currently has an active session.
-  bool get isAuthenticated => _token != null;
-
-  /// The current JWT, or null if not logged in.
-  String? get token => _token;
-
-  /// The role decoded from the JWT payload, or null if not logged in.
-  UserRole? get role => _role;
-
-  /// The tenant/user ID decoded from the JWT `sub` claim.
-  String? get tenantId {
-    final t = _token;
-    if (t == null) return null;
-    try {
-      final parts = t.split('.');
-      if (parts.length != 3) return null;
-      final payload = jsonDecode(
-        utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))),
-      ) as Map<String, dynamic>;
-      return payload['sub'] as String?;
-    } catch (_) {
-      return null;
-    }
+  AuthService() {
+    _authSubscription = _client.auth.onAuthStateChange.listen(
+      _onAuthStateChange,
+      onError: (Object error, StackTrace stackTrace) {
+        developer.log(
+          'Auth state stream error',
+          name: 'AuthService',
+          level: 1000,
+          error: error,
+          stackTrace: stackTrace,
+        );
+      },
+    );
   }
 
-  /// Restores a persisted session from storage.
+  /// Whether the user currently has an active Supabase session.
+  bool get isAuthenticated => _client.auth.currentSession != null;
+
+  /// The user's application role, or null if mid-signup (no profile row yet).
+  UserRole? get role => _role;
+
+  /// The authenticated user's UUID — equals tenant_id / staff_user_id in DB.
+  String? get tenantId => _client.auth.currentUser?.id;
+
+  /// Restores a persisted session on startup and resolves the role.
   ///
-  /// Call once during app startup. On web the sessionStorage is already
-  /// scoped to the tab lifetime; on mobile this re-hydrates the token
-  /// saved by a previous app run.
+  /// Supabase handles session persistence internally; this only queries
+  /// the role from the database when a session already exists.
   Future<void> initialize() async {
-    final stored = await _storage.read();
-    if (stored != null) {
-      _token = stored;
-      _role = _roleFromJwt(stored);
-      _apiClient.authToken = stored;
+    if (isAuthenticated) {
+      await _resolveRole();
       notifyListeners();
     }
   }
 
-  /// Authenticates a user with [email] and [password].
+  /// Signs in with [email] and [password].
   ///
-  /// The returned JWT contains a `role` claim that determines whether the
-  /// user is routed to the tenant or staff experience.
+  /// Throws [AuthException] on failure. Navigation is handled automatically
+  /// by [GoRouter]'s redirect, which listens to this notifier.
   Future<void> login(String email, String password) async {
+    await _client.auth.signInWithPassword(email: email, password: password);
+  }
+
+  /// Signals that the signup wizard is complete.
+  ///
+  /// Re-resolves the role now that the tenant profile row exists, which
+  /// causes [GoRouter] to redirect to the tenant home screen.
+  Future<void> signupComplete() async {
+    await _resolveRole();
+    notifyListeners();
+  }
+
+  /// Signs out and clears the role.
+  Future<void> logout() async {
+    _role = null;
+    await _client.auth.signOut();
+  }
+
+  Future<void> _onAuthStateChange(AuthState state) async {
+    switch (state.event) {
+      case AuthChangeEvent.signedIn:
+      case AuthChangeEvent.tokenRefreshed:
+      case AuthChangeEvent.userUpdated:
+        await _resolveRole();
+      case AuthChangeEvent.signedOut:
+        _role = null;
+      default:
+        break;
+    }
+    notifyListeners();
+  }
+
+  /// Checks [staff_user] then [tenant] to determine the role.
+  ///
+  /// Returns null if neither row exists — the mid-signup state where the
+  /// user has verified their email but has not yet created their profile.
+  Future<void> _resolveRole() async {
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) {
+      _role = null;
+      return;
+    }
     try {
-      final token = await _apiClient.login(email, password);
-      await _applyToken(token);
+      final staffRow = await _client
+          .from('staff_user')
+          .select('role')
+          .eq('staff_user_id', userId)
+          .maybeSingle();
+
+      if (staffRow != null) {
+        _role = _parseStaffRole(staffRow['role'] as String);
+        return;
+      }
+
+      final tenantRow = await _client
+          .from('tenant')
+          .select('tenant_id')
+          .eq('tenant_id', userId)
+          .maybeSingle();
+
+      _role = tenantRow != null ? UserRole.tenant : null;
     } catch (e, s) {
       developer.log(
-        'Login failed',
+        'Failed to resolve role',
         name: 'AuthService',
         level: 1000,
         error: e,
         stackTrace: s,
       );
-      rethrow;
+      _role = null;
     }
   }
 
-  /// Completes signup by persisting [jwt] and notifying the router.
-  ///
-  /// Call this after the tenant has picked their housing and address. The
-  /// router will redirect to the tenant home screen automatically.
-  Future<void> signupComplete(String jwt) async => _applyToken(jwt);
+  UserRole _parseStaffRole(String value) => switch (value) {
+        'root_admin' => UserRole.rootAdmin,
+        'admin' => UserRole.admin,
+        'housing_manager' => UserRole.housingManager,
+        'maintenance_staff' => UserRole.maintenanceStaff,
+        _ => UserRole.admin,
+      };
 
-  /// Clears the session, removes the stored token, and notifies listeners.
-  Future<void> logout() async {
-    await _storage.delete();
-    _token = null;
-    _role = null;
-    _apiClient.authToken = null;
-    notifyListeners();
-  }
-
-  Future<void> _applyToken(String token) async {
-    await _storage.write(token);
-    _token = token;
-    _role = _roleFromJwt(token);
-    _apiClient.authToken = token;
-    notifyListeners();
-  }
-
-  /// Decodes the [UserRole] from the JWT payload's `role` claim.
-  ///
-  /// Returns null if the token is malformed or the claim is absent.
-  UserRole? _roleFromJwt(String token) {
-    try {
-      final parts = token.split('.');
-      if (parts.length != 3) return null;
-      final payload = jsonDecode(
-        utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))),
-      ) as Map<String, dynamic>;
-      final roleStr = payload['role'] as String?;
-      if (roleStr == null) return null;
-      return UserRole.values.firstWhere(
-        (r) => r.name == roleStr,
-        orElse: () => UserRole.tenant,
-      );
-    } catch (e, s) {
-      developer.log(
-        'Failed to decode JWT role',
-        name: 'AuthService',
-        error: e,
-        stackTrace: s,
-      );
-      return null;
-    }
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
   }
 }

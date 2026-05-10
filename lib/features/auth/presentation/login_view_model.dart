@@ -1,8 +1,8 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
 
 /// Reasons a login attempt can fail — mapped to localized strings in the UI.
@@ -37,8 +37,8 @@ class LoginViewModel extends ChangeNotifier {
 
     try {
       await _authService.login(email, password);
-    } on ApiException catch (e) {
-      _error = e.statusCode == 401
+    } on AuthException catch (e) {
+      _error = e.statusCode == '400' || e.message.contains('Invalid')
           ? LoginError.invalidCredentials
           : LoginError.generic;
     } catch (e, s) {
