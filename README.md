@@ -1,4 +1,4 @@
-# Beboer App — API & Database Reference
+# Habitant — API & Database Reference
 
 This document is for the backend developer. It covers the full PostgreSQL schema — one table per section, with a column breakdown and the `CREATE` SQL — plus read-only views, flag bits, and enum values.
 
