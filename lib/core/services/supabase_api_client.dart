@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../models/address.dart';
 import '../models/housing.dart';
+import '../models/invitation.dart';
 import '../models/issue.dart';
 import '../models/issue_comment.dart';
 import '../models/maintenance_update.dart';
@@ -250,6 +251,36 @@ class SupabaseApiClient extends ApiClient {
     return getIssue(issueId);
   }
 
+  // ---- Invitations -----------------------------------------------------------
+
+  @override
+  Future<Invitation> getInvitationByToken(String token) async {
+    final row = await _client
+        .from('tenant_invitation')
+        .select('*, address(*, housing:housing_id(name))')
+        .eq('token', token)
+        .maybeSingle();
+    if (row == null) throw const InvitationNotFoundException();
+    return Invitation.fromRow(row);
+  }
+
+  @override
+  Future<Invitation> createInvitation(String addressId) async {
+    final staffId = _client.auth.currentUser!.id;
+    final row = await _client.from('tenant_invitation').insert({
+      'address_id': addressId,
+      'created_by': staffId,
+    }).select('*, address(*, housing:housing_id(name))').single();
+    return Invitation.fromRow(row);
+  }
+
+  @override
+  Future<void> cancelInvitation(String invitationId) async {
+    await _client.from('tenant_invitation').update({
+      'cancelled_at': DateTime.now().toUtc().toIso8601String(),
+    }).eq('invitation_id', invitationId);
+  }
+
   // ---- Admin -----------------------------------------------------------------
 
   @override
@@ -303,6 +334,8 @@ class SupabaseApiClient extends ApiClient {
       postalCode: row['postal_code'] as String,
       city: row['city'] as String,
       isOccupied: (flags & 1) == 1,
+      customerApartmentIdentifier:
+          row['customer_apartment_identifier'] as String?,
       history: const [],
     );
   }
@@ -310,9 +343,13 @@ class SupabaseApiClient extends ApiClient {
   TenantProfile _tenantFromRow(Map<String, dynamic> row) => TenantProfile(
         id: row['tenant_id'] as String,
         email: row['email'] as String,
+        name: row['name'] as String?,
         phoneNumber: row['phone_number'] as String?,
+        phoneNumberSecondary: row['phone_number_secondary'] as String?,
         currentHousingId: row['current_housing_id'] as String?,
         currentAddressId: row['current_address_id'] as String?,
+        customerTenantIdentifier:
+            row['customer_tenant_identifier'] as String?,
         createdAt: DateTime.parse(row['created'] as String),
       );
 

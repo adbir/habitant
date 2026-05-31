@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/address.dart';
 import '../models/housing.dart';
+import '../models/invitation.dart';
 import '../models/issue.dart';
 import '../models/tenant_profile.dart';
 
@@ -347,6 +348,25 @@ class ApiClient {
     );
   }
 
+  /// Invitation endpoints
+
+  /// Returns an active [Invitation] by its [token], including the pre-assigned
+  /// address and housing name. Throws [InvitationNotFoundException] if the
+  /// token is invalid or expired.
+  Future<Invitation> getInvitationByToken(String token) async {
+    throw UnimplementedError();
+  }
+
+  /// Creates an invitation for [addressId] and returns it with address details.
+  Future<Invitation> createInvitation(String addressId) async {
+    throw UnimplementedError();
+  }
+
+  /// Cancels an invitation by setting its [cancelled_at] timestamp.
+  Future<void> cancelInvitation(String invitationId) async {
+    throw UnimplementedError();
+  }
+
   /// Admin endpoints
   Future<Issue> markNeedsAssistance(String issueId) async {
     return _patch(
@@ -376,4 +396,9 @@ class ApiException implements Exception {
 
   @override
   String toString() => 'ApiException: $statusCode - $message';
+}
+
+/// Thrown when an invitation token is not found, expired, or cancelled.
+class InvitationNotFoundException implements Exception {
+  const InvitationNotFoundException();
 }

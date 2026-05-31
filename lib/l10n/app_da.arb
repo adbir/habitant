@@ -89,5 +89,21 @@
   "commentHint": "Skriv en kommentar...",
   "internalNoteToggle": "Internt notat",
   "sendButton": "Send",
-  "logoutTooltip": "Log ud"
+  "logoutTooltip": "Log ud",
+
+  "joinTitle": "Opret adgang",
+  "joinSubtitle": "Du er inviteret til at bo på:",
+  "joinContinueButton": "Opret konto",
+  "joinInvalidTokenTitle": "Ugyldigt invitationslink",
+  "joinInvalidTokenBody": "Dette link er udløbet eller ugyldigt. Kontakt din boligadministrator.",
+  "joinGoToLogin": "Gå til login",
+
+  "inviteCreateTitle": "Opret invitation",
+  "invitePickHousing": "Vælg boligforening",
+  "invitePickAddress": "Vælg adresse",
+  "inviteCreatedTitle": "Invitation oprettet",
+  "inviteCreatedSubtitle": "Del dette link med lejeren:",
+  "inviteCopyLink": "Kopiér link",
+  "inviteLinkCopied": "Link kopieret",
+  "inviteCreateAnother": "Opret ny invitation"
 }

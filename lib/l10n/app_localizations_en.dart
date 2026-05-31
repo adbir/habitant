@@ -217,4 +217,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoutTooltip => 'Log out';
+
+  @override
+  String get joinTitle => 'Set up access';
+
+  @override
+  String get joinSubtitle => 'You\'ve been invited to live at:';
+
+  @override
+  String get joinContinueButton => 'Create account';
+
+  @override
+  String get joinInvalidTokenTitle => 'Invalid invitation link';
+
+  @override
+  String get joinInvalidTokenBody =>
+      'This link has expired or is invalid. Contact your housing administrator.';
+
+  @override
+  String get joinGoToLogin => 'Go to login';
+
+  @override
+  String get inviteCreateTitle => 'Create invitation';
+
+  @override
+  String get invitePickHousing => 'Select housing';
+
+  @override
+  String get invitePickAddress => 'Select address';
+
+  @override
+  String get inviteCreatedTitle => 'Invitation created';
+
+  @override
+  String get inviteCreatedSubtitle => 'Share this link with the tenant:';
+
+  @override
+  String get inviteCopyLink => 'Copy link';
+
+  @override
+  String get inviteLinkCopied => 'Link copied';
+
+  @override
+  String get inviteCreateAnother => 'Create another invitation';
 }

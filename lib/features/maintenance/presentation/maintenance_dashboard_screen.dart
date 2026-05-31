@@ -72,6 +72,11 @@ class _MaintenanceDashboardScreenState
               ),
             ),
           IconButton(
+            icon: const Icon(Icons.mail_outline),
+            tooltip: l10n.inviteCreateTitle,
+            onPressed: () => context.push('/staff/invite'),
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             tooltip: l10n.logoutTooltip,
             onPressed: widget.authService.logout,

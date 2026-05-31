@@ -74,6 +74,10 @@ class Address {
   final String city;
   final bool isOccupied;
 
+  /// Opaque identifier from the housing company's own system (e.g. "1-25-1"
+  /// in the AAB scheme "1-25-1-18"). Null if the company has no such system.
+  final String? customerApartmentIdentifier;
+
   /// Full tenancy history, visible to administrators only.
   final List<TenancyRecord> history;
 
@@ -87,6 +91,7 @@ class Address {
     required this.postalCode,
     required this.city,
     required this.isOccupied,
+    this.customerApartmentIdentifier,
     required this.history,
   });
 
@@ -118,6 +123,7 @@ class Address {
     String? postalCode,
     String? city,
     bool? isOccupied,
+    String? customerApartmentIdentifier,
     List<TenancyRecord>? history,
   }) {
     return Address(
@@ -130,6 +136,8 @@ class Address {
       postalCode: postalCode ?? this.postalCode,
       city: city ?? this.city,
       isOccupied: isOccupied ?? this.isOccupied,
+      customerApartmentIdentifier:
+          customerApartmentIdentifier ?? this.customerApartmentIdentifier,
       history: history ?? this.history,
     );
   }
@@ -145,6 +153,8 @@ class Address {
       postalCode: json['postalCode'] as String,
       city: json['city'] as String,
       isOccupied: json['isOccupied'] as bool? ?? false,
+      customerApartmentIdentifier:
+          json['customerApartmentIdentifier'] as String?,
       history: (json['history'] as List<dynamic>? ?? [])
           .map((r) => TenancyRecord.fromJson(r as Map<String, dynamic>))
           .toList(),
@@ -161,6 +171,7 @@ class Address {
         'postalCode': postalCode,
         'city': city,
         'isOccupied': isOccupied,
+        'customerApartmentIdentifier': customerApartmentIdentifier,
         'history': history.map((r) => r.toJson()).toList(),
       };
 }

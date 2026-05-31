@@ -89,5 +89,21 @@
   "commentHint": "Write a comment...",
   "internalNoteToggle": "Internal note",
   "sendButton": "Send",
-  "logoutTooltip": "Log out"
+  "logoutTooltip": "Log out",
+
+  "joinTitle": "Set up access",
+  "joinSubtitle": "You've been invited to live at:",
+  "joinContinueButton": "Create account",
+  "joinInvalidTokenTitle": "Invalid invitation link",
+  "joinInvalidTokenBody": "This link has expired or is invalid. Contact your housing administrator.",
+  "joinGoToLogin": "Go to login",
+
+  "inviteCreateTitle": "Create invitation",
+  "invitePickHousing": "Select housing",
+  "invitePickAddress": "Select address",
+  "inviteCreatedTitle": "Invitation created",
+  "inviteCreatedSubtitle": "Share this link with the tenant:",
+  "inviteCopyLink": "Copy link",
+  "inviteLinkCopied": "Link copied",
+  "inviteCreateAnother": "Create another invitation"
 }

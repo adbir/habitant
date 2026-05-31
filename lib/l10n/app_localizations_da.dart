@@ -219,4 +219,47 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get logoutTooltip => 'Log ud';
+
+  @override
+  String get joinTitle => 'Opret adgang';
+
+  @override
+  String get joinSubtitle => 'Du er inviteret til at bo på:';
+
+  @override
+  String get joinContinueButton => 'Opret konto';
+
+  @override
+  String get joinInvalidTokenTitle => 'Ugyldigt invitationslink';
+
+  @override
+  String get joinInvalidTokenBody =>
+      'Dette link er udløbet eller ugyldigt. Kontakt din boligadministrator.';
+
+  @override
+  String get joinGoToLogin => 'Gå til login';
+
+  @override
+  String get inviteCreateTitle => 'Opret invitation';
+
+  @override
+  String get invitePickHousing => 'Vælg boligforening';
+
+  @override
+  String get invitePickAddress => 'Vælg adresse';
+
+  @override
+  String get inviteCreatedTitle => 'Invitation oprettet';
+
+  @override
+  String get inviteCreatedSubtitle => 'Del dette link med lejeren:';
+
+  @override
+  String get inviteCopyLink => 'Kopiér link';
+
+  @override
+  String get inviteLinkCopied => 'Link kopieret';
+
+  @override
+  String get inviteCreateAnother => 'Opret ny invitation';
 }

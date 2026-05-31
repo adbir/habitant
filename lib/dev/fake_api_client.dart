@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 
 import '../core/models/address.dart';
 import '../core/models/housing.dart';
+import '../core/models/invitation.dart';
 import '../core/models/issue.dart';
 import '../core/models/issue_comment.dart';
 import '../core/models/maintenance_update.dart';
@@ -376,6 +377,61 @@ class FakeApiClient extends ApiClient {
     );
     _replaceIssue(updated);
     return updated;
+  }
+
+  // ---- Invitations ---------------------------------------------------------
+
+  static const _fakeInvitationToken =
+      'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
+
+  @override
+  Future<Invitation> getInvitationByToken(String token) async {
+    await _wait();
+    if (token != _fakeInvitationToken) {
+      throw const InvitationNotFoundException();
+    }
+    return _fakeInvitation();
+  }
+
+  @override
+  Future<Invitation> createInvitation(String addressId) async {
+    await _wait();
+    final address = _housings
+        .expand((h) => h.addresses)
+        .firstWhere(
+          (a) => a.id == addressId,
+          orElse: () => throw ApiException(404, 'Address not found'),
+        );
+    final housing =
+        _housings.firstWhere((h) => h.id == address.housingId);
+    return Invitation(
+      id: _uuid.v4(),
+      token: _fakeInvitationToken,
+      addressId: addressId,
+      expiresAt: DateTime.now().add(const Duration(days: 30)),
+      address: address,
+      housingName: housing.name,
+    );
+  }
+
+  @override
+  Future<void> cancelInvitation(String invitationId) async {
+    await _wait();
+    // No-op in dev — invitations are not persisted.
+  }
+
+  Invitation _fakeInvitation() {
+    final address = _housings
+        .expand((h) => h.addresses)
+        .firstWhere((a) => a.id == _idAddrToms157Stv);
+    return Invitation(
+      id: 'fake-invite-id',
+      token: _fakeInvitationToken,
+      addressId: _idAddrToms157Stv,
+      expiresAt: DateTime.now().add(const Duration(days: 30)),
+      address: address,
+      housingName: 'AAB Nørrebro',
+    );
   }
 
   // ---- Admin ---------------------------------------------------------------

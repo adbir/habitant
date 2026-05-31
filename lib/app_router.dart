@@ -6,6 +6,8 @@ import 'core/models/user_role.dart';
 import 'core/services/api_client.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/theme_mode_service.dart';
+import 'features/auth/presentation/admin_invite_screen.dart';
+import 'features/auth/presentation/join_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/signup_screen.dart';
 import 'features/maintenance/presentation/issue_detail_screen.dart';
@@ -100,7 +102,22 @@ class AppRouter {
                 );
               },
             ),
+            GoRoute(
+              path: 'invite',
+              builder: (context, state) => AdminInviteScreen(
+                apiClient: _apiClient,
+                authService: _authService,
+              ),
+            ),
           ],
+        ),
+        GoRoute(
+          path: '/join',
+          builder: (context, state) => JoinScreen(
+            token: state.uri.queryParameters['token'] ?? '',
+            apiClient: _apiClient,
+            authService: _authService,
+          ),
         ),
       ],
     );
@@ -110,20 +127,28 @@ class AppRouter {
     final isAuth = _authService.isAuthenticated;
     final role = _authService.role;
     final location = state.matchedLocation;
-    final publicRoutes = {'/login', '/signup'};
+    final publicRoutes = {'/login', '/signup', '/join'};
 
     if (!isAuth) {
       return publicRoutes.contains(location) ? null : '/login';
     }
 
-    // Authenticated but no profile row yet — user is mid-signup wizard.
+    // Authenticated but no profile row yet.
     if (role == null) {
-      return location == '/signup' ? null : '/signup';
+      // Allow mid-join wizard to stay on /join.
+      if (location == '/signup' || location == '/join') return null;
+      if (_authService.joinInProgress) return '/join';
+      return '/signup';
     }
 
     // Authenticated with a profile — redirect away from auth screens.
     if (publicRoutes.contains(location)) {
       return role.isStaff ? '/staff' : '/tenant';
+    }
+
+    // Non-staff may not access /staff routes.
+    if (location.startsWith('/staff') && !role.isStaff) {
+      return '/tenant';
     }
 
     return null;

@@ -13,6 +13,7 @@ import '../models/user_role.dart';
 /// Notifies listeners on every auth change so [GoRouter] can redirect.
 class AuthService extends ChangeNotifier {
   UserRole? _role;
+  bool _joinInProgress = false;
   StreamSubscription<AuthState>? _authSubscription;
 
   static SupabaseClient get _client => Supabase.instance.client;
@@ -40,6 +41,27 @@ class AuthService extends ChangeNotifier {
 
   /// The authenticated user's UUID — equals tenant_id / staff_user_id in DB.
   String? get tenantId => _client.auth.currentUser?.id;
+
+  /// True while the join wizard is in progress between OTP verification and
+  /// tenant row insertion. Prevents [GoRouter] from redirecting to /signup
+  /// when [AuthChangeEvent.signedIn] fires before the profile row exists.
+  bool get joinInProgress => _joinInProgress;
+
+  /// Called before [supabase.auth.signUp] in the join flow to guard the
+  /// router redirect.
+  void beginJoin() {
+    _joinInProgress = true;
+    notifyListeners();
+  }
+
+  /// Called after the tenant row is inserted in the join flow.
+  ///
+  /// Re-resolves the role so [GoRouter] redirects to the tenant home screen.
+  Future<void> joinComplete() async {
+    _joinInProgress = false;
+    await _resolveRole();
+    notifyListeners();
+  }
 
   /// Restores a persisted session on startup and resolves the role.
   ///

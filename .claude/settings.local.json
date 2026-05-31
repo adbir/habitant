@@ -4,7 +4,12 @@
       "PowerShell(\\(Get-Content \"C:\\\\Users\\\\Adam\\\\.claude\\\\projects\\\\e--arbejde-flutterdev-beboer-beboer-app\\\\eb2a58a6-c042-402f-a817-ea5835be63b2.jsonl\" | Measure-Object -Line\\).Lines)",
       "Bash(flutter analyze:*)",
       "Bash(flutter pub:*)",
-      "Bash(flutter gen-l10n *)"
+      "Bash(flutter gen-l10n *)",
+      "Bash(Get-ChildItem -Path \"E:\\\\arbejde\\\\flutterdev\\\\habitant\" -Recurse -Directory)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Format-Table FullName)",
+      "PowerShell(Get-ChildItem -Path \"E:\\\\arbejde\\\\flutterdev\\\\habitant\" -Recurse -Directory | Select-Object -First 30 | ForEach-Object { $_.FullName })",
+      "Bash(dir /s \"E:\\\\arbejde\\\\flutterdev\\\\habitant\\\\lib\\\\features\" /b)"
     ]
   }
 }

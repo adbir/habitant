@@ -499,6 +499,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Log out'**
   String get logoutTooltip;
+
+  /// No description provided for @joinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up access'**
+  String get joinTitle;
+
+  /// No description provided for @joinSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been invited to live at:'**
+  String get joinSubtitle;
+
+  /// No description provided for @joinContinueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get joinContinueButton;
+
+  /// No description provided for @joinInvalidTokenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid invitation link'**
+  String get joinInvalidTokenTitle;
+
+  /// No description provided for @joinInvalidTokenBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This link has expired or is invalid. Contact your housing administrator.'**
+  String get joinInvalidTokenBody;
+
+  /// No description provided for @joinGoToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to login'**
+  String get joinGoToLogin;
+
+  /// No description provided for @inviteCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create invitation'**
+  String get inviteCreateTitle;
+
+  /// No description provided for @invitePickHousing.
+  ///
+  /// In en, this message translates to:
+  /// **'Select housing'**
+  String get invitePickHousing;
+
+  /// No description provided for @invitePickAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Select address'**
+  String get invitePickAddress;
+
+  /// No description provided for @inviteCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation created'**
+  String get inviteCreatedTitle;
+
+  /// No description provided for @inviteCreatedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this link with the tenant:'**
+  String get inviteCreatedSubtitle;
+
+  /// No description provided for @inviteCopyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get inviteCopyLink;
+
+  /// No description provided for @inviteLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Link copied'**
+  String get inviteLinkCopied;
+
+  /// No description provided for @inviteCreateAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Create another invitation'**
+  String get inviteCreateAnother;
 }
 
 class _AppLocalizationsDelegate
