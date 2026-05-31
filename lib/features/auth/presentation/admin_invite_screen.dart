@@ -59,18 +59,25 @@ class _AdminInviteScreenState extends State<AdminInviteScreen> {
         ),
         body: AdaptiveLayout(
           child: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 480),
-                  child: _buildStep(context, l10n),
-                ),
-              ),
-            ),
+            child: _viewModel.step == AdminInviteStep.addressPicker
+                ? Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 480),
+                      child: _buildStep(context, l10n),
+                    ),
+                  )
+                : Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 480),
+                        child: _buildStep(context, l10n),
+                      ),
+                    ),
+                  ),
           ),
         ),
       ),
@@ -205,7 +212,7 @@ class _HousingCard extends StatelessWidget {
 
 // ---- Address picker ---------------------------------------------------------
 
-class _AddressPickerStep extends StatelessWidget {
+class _AddressPickerStep extends StatefulWidget {
   final Housing housing;
   final bool isLoading;
   final bool hasError;
@@ -221,39 +228,115 @@ class _AddressPickerStep extends StatelessWidget {
   });
 
   @override
+  State<_AddressPickerStep> createState() => _AddressPickerStepState();
+}
+
+class _AddressPickerStepState extends State<_AddressPickerStep> {
+  final TextEditingController _filter = TextEditingController();
+
+  @override
+  void dispose() {
+    _filter.dispose();
+    super.dispose();
+  }
+
+  List<Address> get _filtered {
+    final q = _filter.text.toLowerCase();
+    if (q.isEmpty) return widget.housing.addresses;
+    return widget.housing.addresses.where((a) {
+      return a.shortDisplayAddress.toLowerCase().contains(q) ||
+          (a.customerApartmentIdentifier?.toLowerCase().contains(q) ?? false);
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
+    final filtered = _filtered;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          l10n.invitePickAddress,
-          style: text.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          housing.name,
-          style: text.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 24),
-        ...housing.addresses.map(
-          (a) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _AddressCard(
-              address: a,
-              isLoading: isLoading,
-              onTap: () => onSelect(a),
-            ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                widget.l10n.invitePickAddress,
+                style:
+                    text.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.housing.name,
+                style:
+                    text.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
+              ),
+              const SizedBox(height: 16),
+              ListenableBuilder(
+                listenable: _filter,
+                builder: (context, _) => TextField(
+                  controller: _filter,
+                  decoration: InputDecoration(
+                    hintText: widget.l10n.inviteFilterAddresses,
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _filter.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => setState(() => _filter.clear()),
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
-        if (hasError) ...[
-          const SizedBox(height: 8),
-          Text(
-            l10n.errorGeneric,
-            style: TextStyle(color: colors.error, fontSize: 13),
-          ),
-        ],
+        Expanded(
+          child: filtered.isEmpty && _filter.text.isNotEmpty
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    widget.l10n.inviteNoAddressesFound,
+                    style: text.bodyMedium
+                        ?.copyWith(color: colors.onSurfaceVariant),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                  itemCount: filtered.length + (widget.hasError ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == filtered.length) {
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          widget.l10n.errorGeneric,
+                          style: TextStyle(color: colors.error, fontSize: 13),
+                        ),
+                      );
+                    }
+                    final a = filtered[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: _AddressCard(
+                        address: a,
+                        isLoading: widget.isLoading,
+                        onTap: () => widget.onSelect(a),
+                      ),
+                    );
+                  },
+                ),
+        ),
       ],
     );
   }

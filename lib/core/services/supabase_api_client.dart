@@ -43,15 +43,6 @@ class SupabaseApiClient extends ApiClient {
   // ---- Housing ---------------------------------------------------------------
 
   @override
-  Future<List<Housing>> getHousings() async {
-    final rows = await _client
-        .from('housing')
-        .select('*, address(*)')
-        .order('name');
-    return rows.map(_housingFromRow).toList();
-  }
-
-  @override
   Future<Housing> getHousing(String housingId) async {
     final row = await _client
         .from('housing')
@@ -135,19 +126,6 @@ class SupabaseApiClient extends ApiClient {
     }
 
     return getIssue(issueId);
-  }
-
-  @override
-  Future<void> setTenantHousingAddress(
-    String tenantId,
-    String housingId,
-    String addressId,
-  ) async {
-    await _client.from('tenant').update({
-      'current_housing_id': housingId,
-      'current_address_id': addressId,
-      'tenant_flags': 1, // bit 0 = is_onboarded
-    }).eq('tenant_id', tenantId);
   }
 
   @override

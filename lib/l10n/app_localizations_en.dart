@@ -33,6 +33,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorInvalidCredentials => 'Incorrect email or password.';
 
   @override
+  String get errorEmailNotConfirmed => 'Your email has not been confirmed yet.';
+
+  @override
+  String get errorRateLimited =>
+      'Too many attempts. Please wait a moment and try again.';
+
+  @override
+  String get goToVerification => 'Confirm email';
+
+  @override
   String get errorGeneric => 'Something went wrong. Please try again.';
 
   @override
@@ -74,22 +84,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorInvalidCode => 'That code isn\'t right. Please try again.';
 
   @override
-  String get pickHousingTitle => 'Select your housing';
-
-  @override
-  String get pickHousingSubtitle =>
-      'Choose the housing association you live in';
-
-  @override
-  String get pickAddressTitle => 'Select your address';
-
-  @override
-  String get pickAddressSubtitle => 'Choose your apartment';
-
-  @override
-  String get noAddressesAvailable => 'No available addresses in this housing.';
-
-  @override
   String get alreadyHaveAccount => 'Already have an account?';
 
   @override
@@ -112,6 +106,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get needsAssistanceLabel => 'Needs assistance';
+
+  @override
+  String get awaitingInvitationTitle => 'Awaiting assignment';
+
+  @override
+  String get awaitingInvitationBody =>
+      'Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.';
 
   @override
   String get myIssues => 'My issues';
@@ -245,6 +246,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invitePickAddress => 'Select address';
+
+  @override
+  String get inviteFilterAddresses => 'Search address...';
+
+  @override
+  String get inviteNoAddressesFound => 'No addresses found';
 
   @override
   String get inviteCreatedTitle => 'Invitation created';

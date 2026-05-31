@@ -74,7 +74,7 @@ class FakeApiClient extends ApiClient {
   // ---- Auth ----------------------------------------------------------------
 
   // Pending signups: email → (password, code, phoneNumber?).
-  // Code is always '123456' in dev.
+  // Code is always '12345678' in dev.
   final _pendingSignups = <String, (String, String, String?)>{};
 
   @override
@@ -99,8 +99,8 @@ class FakeApiClient extends ApiClient {
         _tenants.any((t) => t.email == normalized)) {
       throw ApiException(409, 'Email already registered');
     }
-    // In dev the code is always 123456 — a real backend would send an email.
-    _pendingSignups[normalized] = (password, '123456', phoneNumber);
+    // In dev the code is always 12345678 — a real backend would send an email.
+    _pendingSignups[normalized] = (password, '12345678', phoneNumber);
   }
 
   @override
@@ -109,7 +109,7 @@ class FakeApiClient extends ApiClient {
     final normalized = email.toLowerCase();
     final pending = _pendingSignups[normalized];
     if (pending != null) {
-      _pendingSignups[normalized] = (pending.$1, '123456', pending.$3);
+      _pendingSignups[normalized] = (pending.$1, '12345678', pending.$3);
     }
   }
 
@@ -133,12 +133,6 @@ class FakeApiClient extends ApiClient {
   }
 
   @override
-  Future<List<Housing>> getHousings() async {
-    await _wait();
-    return List.of(_housings);
-  }
-
-  @override
   Future<Housing> getHousing(String housingId) async {
     await _wait();
     return _housings.firstWhere(
@@ -158,58 +152,6 @@ class FakeApiClient extends ApiClient {
       (a) => a.id == addressId,
       orElse: () => throw ApiException(404, 'Address not found'),
     );
-  }
-
-  @override
-  Future<void> setTenantHousingAddress(
-    String tenantId,
-    String housingId,
-    String addressId,
-  ) async {
-    await _wait();
-    final tenant = _findTenant(tenantId);
-    _replaceTenant(
-      tenant.copyWith(
-        currentHousingId: housingId,
-        currentAddressId: addressId,
-      ),
-    );
-    // Mark the address as occupied.
-    for (final housing in _housings) {
-      final idx = housing.addresses.indexWhere((a) => a.id == addressId);
-      if (idx != -1) {
-        final updated = List<Address>.of(housing.addresses);
-        final addr = updated[idx];
-        updated[idx] = Address(
-          id: addr.id,
-          housingId: addr.housingId,
-          street: addr.street,
-          number: addr.number,
-          floor: addr.floor,
-          side: addr.side,
-          postalCode: addr.postalCode,
-          city: addr.city,
-          isOccupied: true,
-          history: [
-            ...addr.history,
-            TenancyRecord(
-              tenantId: tenantId,
-              movedInAt: DateTime.now(),
-              issueIds: [],
-            ),
-          ],
-        );
-        _housings[_housings.indexWhere((h) => h.id == housingId)] =
-            Housing(
-          id: housing.id,
-          name: housing.name,
-          city: housing.city,
-          createdAt: housing.createdAt,
-          addresses: updated,
-        );
-        break;
-      }
-    }
   }
 
   // ---- Tenant --------------------------------------------------------------

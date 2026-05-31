@@ -48,8 +48,8 @@ class AppRouter {
         GoRoute(
           path: '/signup',
           builder: (context, state) => SignupScreen(
-            apiClient: _apiClient,
             authService: _authService,
+            verifyEmail: state.extra as String?,
           ),
         ),
         GoRoute(
@@ -133,16 +133,24 @@ class AppRouter {
       return publicRoutes.contains(location) ? null : '/login';
     }
 
-    // Authenticated but no profile row yet.
+    // Authenticated but no profile row yet (incomplete signup/join).
     if (role == null) {
-      // Allow mid-join wizard to stay on /join.
-      if (location == '/signup' || location == '/join') return null;
+      // Allow /login so the user can bail to an existing account.
+      if (location == '/login' || location == '/signup' || location == '/join') {
+        return null;
+      }
       if (_authService.joinInProgress) return '/join';
       return '/signup';
     }
 
+    // Let an in-progress join claim finish even if a role already exists
+    // (user had a bare account from /signup and is now claiming an invitation).
+    if (_authService.joinInProgress && location == '/join') return null;
+
     // Authenticated with a profile — redirect away from auth screens.
-    if (publicRoutes.contains(location)) {
+    if (location == '/login' ||
+        location == '/signup' ||
+        location == '/join') {
       return role.isStaff ? '/staff' : '/tenant';
     }
 

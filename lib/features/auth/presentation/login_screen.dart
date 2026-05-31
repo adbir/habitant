@@ -75,9 +75,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     if (_viewModel.error != null) ...[
                       const SizedBox(height: 12),
-                      _ErrorMessage(
-                        message: _errorText(l10n, _viewModel.error!),
-                      ),
+                      if (_viewModel.error == LoginError.emailNotConfirmed)
+                        _EmailNotConfirmedMessage(
+                          l10n: l10n,
+                          onGoToVerification: () => context.go(
+                            '/signup',
+                            extra: _emailController.text.trim(),
+                          ),
+                        )
+                      else
+                        _ErrorMessage(
+                          message: _errorText(l10n, _viewModel.error!),
+                        ),
                     ],
                     const SizedBox(height: 24),
                     _SubmitButton(
@@ -102,6 +111,8 @@ class _LoginScreenState extends State<LoginScreen> {
       switch (error) {
         LoginError.emptyFields => l10n.errorEmptyFields,
         LoginError.invalidCredentials => l10n.errorInvalidCredentials,
+        LoginError.emailNotConfirmed => l10n.errorEmailNotConfirmed,
+        LoginError.rateLimited => l10n.errorRateLimited,
         LoginError.generic => l10n.errorGeneric,
       };
 }
@@ -187,6 +198,40 @@ class _PasswordField extends StatelessWidget {
         labelText: label,
         border: const OutlineInputBorder(),
       ),
+    );
+  }
+}
+
+class _EmailNotConfirmedMessage extends StatelessWidget {
+  final AppLocalizations l10n;
+  final VoidCallback onGoToVerification;
+
+  const _EmailNotConfirmedMessage({
+    required this.l10n,
+    required this.onGoToVerification,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            l10n.errorEmailNotConfirmed,
+            style: TextStyle(color: colors.error, fontSize: 13),
+          ),
+        ),
+        TextButton(
+          onPressed: onGoToVerification,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(l10n.goToVerification),
+        ),
+      ],
     );
   }
 }

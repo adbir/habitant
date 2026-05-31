@@ -50,7 +50,9 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
       builder: (context, _) => Scaffold(
         appBar: _buildAppBar(context, l10n),
         body: AdaptiveLayout(child: _buildBody(context, l10n)),
-        floatingActionButton: _viewModel.isLoading || _viewModel.hasError
+        floatingActionButton: _viewModel.isLoading ||
+                _viewModel.hasError ||
+                _viewModel.address == null
             ? null
             : FloatingActionButton(
                 onPressed: () => _openReportIssue(context),
@@ -116,6 +118,10 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
         retryLabel: l10n.errorRetry,
         onRetry: _viewModel.refresh,
       );
+    }
+
+    if (_viewModel.address == null) {
+      return _AwaitingInvitationState(l10n: l10n);
     }
 
     if (_viewModel.issues.isEmpty) {
@@ -308,6 +314,43 @@ class _NeedsAssistanceBadge extends StatelessWidget {
 }
 
 // ---- Empty and error states -------------------------------------------------
+
+class _AwaitingInvitationState extends StatelessWidget {
+  final AppLocalizations l10n;
+
+  const _AwaitingInvitationState({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.mail_outline, size: 64, color: colors.outlineVariant),
+            const SizedBox(height: 16),
+            Text(
+              l10n.awaitingInvitationTitle,
+              style: text.titleMedium?.copyWith(
+                color: colors.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.awaitingInvitationBody,
+              textAlign: TextAlign.center,
+              style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class _EmptyState extends StatelessWidget {
   final AppLocalizations l10n;

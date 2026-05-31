@@ -422,7 +422,9 @@ class _CredentialsStep extends StatelessWidget {
         JoinError.passwordMismatch => l10n.errorPasswordMismatch,
         JoinError.passwordTooShort => l10n.errorPasswordTooShort,
         JoinError.emailTaken => l10n.errorEmailTaken,
+        JoinError.invalidCredentials => l10n.errorInvalidCredentials,
         JoinError.invalidCode => l10n.errorInvalidCode,
+        JoinError.rateLimited => l10n.errorRateLimited,
         JoinError.generic => l10n.errorGeneric,
       };
 }

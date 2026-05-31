@@ -5,9 +5,9 @@ import '../../l10n/app_localizations.dart';
 
 /// A self-contained OTP entry widget shared between the signup and join flows.
 ///
-/// Renders a title, a subtitle showing [email], six digit-boxes, an optional
+/// Renders a title, a subtitle showing [email], eight digit-boxes, an optional
 /// error message, a verify button, and a resend link. Automatically submits
-/// when all six boxes are filled.
+/// when all eight boxes are filled.
 class OtpVerificationStep extends StatefulWidget {
   final String email;
   final bool isLoading;
@@ -31,7 +31,7 @@ class OtpVerificationStep extends StatefulWidget {
 }
 
 class _OtpVerificationStepState extends State<OtpVerificationStep> {
-  static const _otpLength = 6;
+  static const _otpLength = 8;
   final _controllers =
       List.generate(_otpLength, (_) => TextEditingController());
   final _focusNodes = List.generate(_otpLength, (_) => FocusNode());

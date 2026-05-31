@@ -146,6 +146,24 @@ abstract class AppLocalizations {
   /// **'Incorrect email or password.'**
   String get errorInvalidCredentials;
 
+  /// No description provided for @errorEmailNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email has not been confirmed yet.'**
+  String get errorEmailNotConfirmed;
+
+  /// No description provided for @errorRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many attempts. Please wait a moment and try again.'**
+  String get errorRateLimited;
+
+  /// No description provided for @goToVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm email'**
+  String get goToVerification;
+
   /// No description provided for @errorGeneric.
   ///
   /// In en, this message translates to:
@@ -224,36 +242,6 @@ abstract class AppLocalizations {
   /// **'That code isn\'t right. Please try again.'**
   String get errorInvalidCode;
 
-  /// No description provided for @pickHousingTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Select your housing'**
-  String get pickHousingTitle;
-
-  /// No description provided for @pickHousingSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose the housing association you live in'**
-  String get pickHousingSubtitle;
-
-  /// No description provided for @pickAddressTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Select your address'**
-  String get pickAddressTitle;
-
-  /// No description provided for @pickAddressSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose your apartment'**
-  String get pickAddressSubtitle;
-
-  /// No description provided for @noAddressesAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'No available addresses in this housing.'**
-  String get noAddressesAvailable;
-
   /// No description provided for @alreadyHaveAccount.
   ///
   /// In en, this message translates to:
@@ -301,6 +289,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Needs assistance'**
   String get needsAssistanceLabel;
+
+  /// No description provided for @awaitingInvitationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting assignment'**
+  String get awaitingInvitationTitle;
+
+  /// No description provided for @awaitingInvitationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.'**
+  String get awaitingInvitationBody;
 
   /// No description provided for @myIssues.
   ///
@@ -553,6 +553,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select address'**
   String get invitePickAddress;
+
+  /// No description provided for @inviteFilterAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Search address...'**
+  String get inviteFilterAddresses;
+
+  /// No description provided for @inviteNoAddressesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No addresses found'**
+  String get inviteNoAddressesFound;
 
   /// No description provided for @inviteCreatedTitle.
   ///

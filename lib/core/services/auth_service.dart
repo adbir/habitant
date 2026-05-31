@@ -47,11 +47,19 @@ class AuthService extends ChangeNotifier {
   /// when [AuthChangeEvent.signedIn] fires before the profile row exists.
   bool get joinInProgress => _joinInProgress;
 
-  /// Called before [supabase.auth.signUp] in the join flow to guard the
-  /// router redirect.
+  /// Called when the join flow starts to prevent the router redirecting
+  /// away from /join while the flow is in progress.
   void beginJoin() {
     _joinInProgress = true;
     notifyListeners();
+  }
+
+  /// Releases the join gate without completing (invalid token, user left).
+  void cancelJoin() {
+    if (_joinInProgress) {
+      _joinInProgress = false;
+      notifyListeners();
+    }
   }
 
   /// Called after the tenant row is inserted in the join flow.
@@ -113,11 +121,12 @@ class AuthService extends ChangeNotifier {
 
   /// Checks [staff_user] then [tenant] to determine the role.
   ///
-  /// Returns null if neither row exists — the mid-signup state where the
-  /// user has verified their email but has not yet created their profile.
+  /// If neither row exists but the user's email is confirmed, a bare tenant
+  /// row is created automatically so confirmed users are always routed to
+  /// the tenant home screen (which shows the awaiting-invitation state).
   Future<void> _resolveRole() async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) {
+    final user = _client.auth.currentUser;
+    if (user == null) {
       _role = null;
       return;
     }
@@ -125,7 +134,7 @@ class AuthService extends ChangeNotifier {
       final staffRow = await _client
           .from('staff_user')
           .select('role')
-          .eq('staff_user_id', userId)
+          .eq('staff_user_id', user.id)
           .maybeSingle();
 
       if (staffRow != null) {
@@ -136,10 +145,26 @@ class AuthService extends ChangeNotifier {
       final tenantRow = await _client
           .from('tenant')
           .select('tenant_id')
-          .eq('tenant_id', userId)
+          .eq('tenant_id', user.id)
           .maybeSingle();
 
-      _role = tenantRow != null ? UserRole.tenant : null;
+      if (tenantRow != null) {
+        _role = UserRole.tenant;
+        return;
+      }
+
+      // No profile row yet. If email is confirmed, auto-create a bare tenant
+      // row so the user lands on the tenant home screen (awaiting invitation).
+      if (user.emailConfirmedAt != null && user.email != null) {
+        await _client.from('tenant').insert({
+          'tenant_id': user.id,
+          'email': user.email!,
+          'tenant_flags': 0,
+        });
+        _role = UserRole.tenant;
+      } else {
+        _role = null;
+      }
     } catch (e, s) {
       developer.log(
         'Failed to resolve role',
