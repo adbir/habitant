@@ -6,7 +6,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/services/auth_service.dart';
 
 /// Reasons a login attempt can fail — mapped to localized strings in the UI.
-enum LoginError { emptyFields, invalidCredentials, generic }
+enum LoginError {
+  emptyFields,
+  invalidCredentials,
+  emailNotConfirmed,
+  rateLimited,
+  generic,
+}
 
 /// Manages login form state.
 ///
@@ -38,9 +44,16 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await _authService.login(email, password);
     } on AuthException catch (e) {
-      _error = e.statusCode == '400' || e.message.contains('Invalid')
-          ? LoginError.invalidCredentials
-          : LoginError.generic;
+      final msg = e.message.toLowerCase();
+      if (msg.contains('email not confirmed')) {
+        _error = LoginError.emailNotConfirmed;
+      } else if (e.statusCode == '429' || msg.contains('rate limit') || msg.contains('too many')) {
+        _error = LoginError.rateLimited;
+      } else if (e.statusCode == '400' || msg.contains('invalid')) {
+        _error = LoginError.invalidCredentials;
+      } else {
+        _error = LoginError.generic;
+      }
     } catch (e, s) {
       developer.log(
         'Login failed',

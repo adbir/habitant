@@ -185,11 +185,6 @@ class ApiClient {
     return result;
   }
 
-  /// Returns all housings available for tenant signup.
-  Future<List<Housing>> getHousings() async {
-    return _getList('/housings', Housing.fromJson);
-  }
-
   /// Returns a single housing by ID.
   Future<Housing> getHousing(String housingId) async {
     return _get('/housings/$housingId', Housing.fromJson);
@@ -200,19 +195,6 @@ class ApiClient {
     return _get(
       '/housings/$housingId/addresses/$addressId',
       Address.fromJson,
-    );
-  }
-
-  /// Sets the tenant's housing and address after signup.
-  Future<void> setTenantHousingAddress(
-    String tenantId,
-    String housingId,
-    String addressId,
-  ) async {
-    await _patch(
-      '/tenants/$tenantId/housing-address',
-      {'housingId': housingId, 'addressId': addressId},
-      (_) => null,
     );
   }
 

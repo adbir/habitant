@@ -33,6 +33,15 @@ class AppLocalizationsDa extends AppLocalizations {
   String get errorInvalidCredentials => 'Forkert e-mail eller adgangskode.';
 
   @override
+  String get errorEmailNotConfirmed => 'Din e-mail er ikke bekræftet endnu.';
+
+  @override
+  String get errorRateLimited => 'For mange forsøg. Vent lidt og prøv igen.';
+
+  @override
+  String get goToVerification => 'Bekræft e-mail';
+
+  @override
   String get errorGeneric => 'Noget gik galt. Prøv venligst igen.';
 
   @override
@@ -75,22 +84,6 @@ class AppLocalizationsDa extends AppLocalizations {
   String get errorInvalidCode => 'Koden er forkert. Prøv venligst igen.';
 
   @override
-  String get pickHousingTitle => 'Vælg din boligforening';
-
-  @override
-  String get pickHousingSubtitle => 'Vælg den boligforening du bor i';
-
-  @override
-  String get pickAddressTitle => 'Vælg din adresse';
-
-  @override
-  String get pickAddressSubtitle => 'Vælg din lejlighed';
-
-  @override
-  String get noAddressesAvailable =>
-      'Ingen ledige adresser i denne boligforening.';
-
-  @override
   String get alreadyHaveAccount => 'Har du allerede en konto?';
 
   @override
@@ -113,6 +106,13 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get needsAssistanceLabel => 'Kræver hjælp';
+
+  @override
+  String get awaitingInvitationTitle => 'Afventer tildeling';
+
+  @override
+  String get awaitingInvitationBody =>
+      'Din konto er oprettet. Når din boligforening sender dig et invitationslink, kan du bruge det til at tilknytte din bolig.';
 
   @override
   String get myIssues => 'Mine meldinger';
@@ -230,6 +230,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get joinContinueButton => 'Opret konto';
 
   @override
+  String get joinAcceptButton => 'Accepter invitation';
+
+  @override
   String get joinInvalidTokenTitle => 'Ugyldigt invitationslink';
 
   @override
@@ -247,6 +250,12 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get invitePickAddress => 'Vælg adresse';
+
+  @override
+  String get inviteFilterAddresses => 'Søg adresse...';
+
+  @override
+  String get inviteNoAddressesFound => 'Ingen adresser matcher søgningen';
 
   @override
   String get inviteCreatedTitle => 'Invitation oprettet';

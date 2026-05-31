@@ -11,6 +11,9 @@
 
   "errorEmptyFields": "Udfyld venligst alle felter.",
   "errorInvalidCredentials": "Forkert e-mail eller adgangskode.",
+  "errorEmailNotConfirmed": "Din e-mail er ikke bekræftet endnu.",
+  "errorRateLimited": "For mange forsøg. Vent lidt og prøv igen.",
+  "goToVerification": "Bekræft e-mail",
   "errorGeneric": "Noget gik galt. Prøv venligst igen.",
 
   "nextButton": "Næste",
@@ -32,11 +35,6 @@
   "resendCode": "Send kode igen",
   "errorInvalidCode": "Koden er forkert. Prøv venligst igen.",
 
-  "pickHousingTitle": "Vælg din boligforening",
-  "pickHousingSubtitle": "Vælg den boligforening du bor i",
-  "pickAddressTitle": "Vælg din adresse",
-  "pickAddressSubtitle": "Vælg din lejlighed",
-  "noAddressesAvailable": "Ingen ledige adresser i denne boligforening.",
 
   "alreadyHaveAccount": "Har du allerede en konto?",
   "loginLink": "Log ind",
@@ -47,6 +45,9 @@
   "issueStatusCompleted": "Afsluttet",
   "issueStatusRejected": "Afvist",
   "needsAssistanceLabel": "Kræver hjælp",
+
+  "awaitingInvitationTitle": "Afventer tildeling",
+  "awaitingInvitationBody": "Din konto er oprettet. Når din boligforening sender dig et invitationslink, kan du bruge det til at tilknytte din bolig.",
 
   "myIssues": "Mine meldinger",
   "noIssuesYet": "Ingen meldinger endnu",
@@ -94,6 +95,7 @@
   "joinTitle": "Opret adgang",
   "joinSubtitle": "Du er inviteret til at bo på:",
   "joinContinueButton": "Opret konto",
+  "joinAcceptButton": "Accepter invitation",
   "joinInvalidTokenTitle": "Ugyldigt invitationslink",
   "joinInvalidTokenBody": "Dette link er udløbet eller ugyldigt. Kontakt din boligadministrator.",
   "joinGoToLogin": "Gå til login",
@@ -101,6 +103,8 @@
   "inviteCreateTitle": "Opret invitation",
   "invitePickHousing": "Vælg boligforening",
   "invitePickAddress": "Vælg adresse",
+  "inviteFilterAddresses": "Søg adresse...",
+  "inviteNoAddressesFound": "Ingen adresser matcher søgningen",
   "inviteCreatedTitle": "Invitation oprettet",
   "inviteCreatedSubtitle": "Del dette link med lejeren:",
   "inviteCopyLink": "Kopiér link",

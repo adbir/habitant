@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../../core/models/address.dart';
-import '../../../core/models/housing.dart';
-import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/adaptive_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import 'signup_view_model.dart';
 
 class SignupScreen extends StatefulWidget {
-  final ApiClient apiClient;
   final AuthService authService;
+  final String? verifyEmail;
 
   const SignupScreen({
     super.key,
-    required this.apiClient,
     required this.authService,
+    this.verifyEmail,
   });
 
   @override
@@ -38,8 +36,8 @@ class _SignupScreenState extends State<SignupScreen> {
   void initState() {
     super.initState();
     _viewModel = SignupViewModel(
-      apiClient: widget.apiClient,
       authService: widget.authService,
+      verifyEmail: widget.verifyEmail,
     );
   }
 
@@ -62,7 +60,10 @@ class _SignupScreenState extends State<SignupScreen> {
     return ListenableBuilder(
       listenable: _viewModel,
       builder: (context, _) => Scaffold(
-        appBar: _buildAppBar(context),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
         body: AdaptiveLayout(
           child: SafeArea(
             child: Center(
@@ -80,22 +81,6 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  AppBar _buildAppBar(BuildContext context) {
-    final step = _viewModel.step;
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      // Housing step: account is created — prevent navigating back.
-      automaticallyImplyLeading: step != SignupStep.housing,
-      leading: step == SignupStep.address
-          ? IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: _viewModel.goBack,
-            )
-          : null,
     );
   }
 
@@ -126,19 +111,6 @@ class _SignupScreenState extends State<SignupScreen> {
           l10n: l10n,
           onSubmit: _viewModel.submitCode,
           onResend: _viewModel.resendCode,
-        ),
-      SignupStep.housing => _HousingStep(
-          housings: _viewModel.housings,
-          l10n: l10n,
-          onSelect: _viewModel.selectHousing,
-        ),
-      SignupStep.address => _AddressStep(
-          housing: _viewModel.selectedHousing!,
-          addresses: _viewModel.availableAddresses,
-          isLoading: _viewModel.isLoading,
-          error: _viewModel.error,
-          l10n: l10n,
-          onSelect: _viewModel.selectAddress,
         ),
     };
   }
@@ -267,6 +239,7 @@ class _CredentialsStep extends StatelessWidget {
         SignupError.passwordTooShort => l10n.errorPasswordTooShort,
         SignupError.emailTaken => l10n.errorEmailTaken,
         SignupError.invalidCode => l10n.errorInvalidCode,
+        SignupError.rateLimited => l10n.errorRateLimited,
         SignupError.generic => l10n.errorGeneric,
       };
 }
@@ -295,7 +268,7 @@ class _VerificationStep extends StatefulWidget {
 }
 
 class _VerificationStepState extends State<_VerificationStep> {
-  static const _otpLength = 6;
+  static const _otpLength = 8;
   final _controllers =
       List.generate(_otpLength, (_) => TextEditingController());
   final _focusNodes = List.generate(_otpLength, (_) => FocusNode());
@@ -439,211 +412,6 @@ class _OtpBox extends StatelessWidget {
   }
 }
 
-// ---- Step 3: Housing picker -------------------------------------------------
-
-class _HousingStep extends StatelessWidget {
-  final List<Housing> housings;
-  final AppLocalizations l10n;
-  final ValueChanged<Housing> onSelect;
-
-  const _HousingStep({
-    required this.housings,
-    required this.l10n,
-    required this.onSelect,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    final colors = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          l10n.pickHousingTitle,
-          style: text.displaySmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          l10n.pickHousingSubtitle,
-          style: text.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 24),
-        ...housings.map(
-          (h) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _HousingCard(housing: h, onTap: () => onSelect(h)),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HousingCard extends StatelessWidget {
-  final Housing housing;
-  final VoidCallback onTap;
-
-  const _HousingCard({required this.housing, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colors.outlineVariant),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      housing.name,
-                      style: text.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      housing.city,
-                      style: text.bodyMedium?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ---- Step 4: Address picker -------------------------------------------------
-
-class _AddressStep extends StatelessWidget {
-  final Housing housing;
-  final List<Address> addresses;
-  final bool isLoading;
-  final SignupError? error;
-  final AppLocalizations l10n;
-  final ValueChanged<Address> onSelect;
-
-  const _AddressStep({
-    required this.housing,
-    required this.addresses,
-    required this.isLoading,
-    required this.error,
-    required this.l10n,
-    required this.onSelect,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    final colors = Theme.of(context).colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          l10n.pickAddressTitle,
-          style: text.displaySmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: colors.onSurface,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          housing.name,
-          style: text.bodyLarge?.copyWith(color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: 24),
-        if (addresses.isEmpty)
-          Text(
-            l10n.noAddressesAvailable,
-            style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-          )
-        else
-          ...addresses.map(
-            (a) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _AddressCard(
-                address: a,
-                isLoading: isLoading,
-                onTap: () => onSelect(a),
-              ),
-            ),
-          ),
-        if (error != null) ...[
-          const SizedBox(height: 8),
-          _ErrorText(message: l10n.errorGeneric),
-        ],
-      ],
-    );
-  }
-}
-
-class _AddressCard extends StatelessWidget {
-  final Address address;
-  final bool isLoading;
-  final VoidCallback onTap;
-
-  const _AddressCard({
-    required this.address,
-    required this.isLoading,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colors.outlineVariant),
-      ),
-      child: InkWell(
-        onTap: isLoading ? null : onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  address.shortDisplayAddress,
-                  style: text.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ---- Shared helpers ---------------------------------------------------------
 
 class _ErrorText extends StatelessWidget {
@@ -693,7 +461,7 @@ class _LoginLink extends StatelessWidget {
           style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
         ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.go('/login'),
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             minimumSize: Size.zero,

@@ -11,6 +11,9 @@
 
   "errorEmptyFields": "Please fill in all fields.",
   "errorInvalidCredentials": "Incorrect email or password.",
+  "errorEmailNotConfirmed": "Your email has not been confirmed yet.",
+  "errorRateLimited": "Too many attempts. Please wait a moment and try again.",
+  "goToVerification": "Confirm email",
   "errorGeneric": "Something went wrong. Please try again.",
 
   "nextButton": "Next",
@@ -32,11 +35,6 @@
   "resendCode": "Resend code",
   "errorInvalidCode": "That code isn't right. Please try again.",
 
-  "pickHousingTitle": "Select your housing",
-  "pickHousingSubtitle": "Choose the housing association you live in",
-  "pickAddressTitle": "Select your address",
-  "pickAddressSubtitle": "Choose your apartment",
-  "noAddressesAvailable": "No available addresses in this housing.",
 
   "alreadyHaveAccount": "Already have an account?",
   "loginLink": "Log in",
@@ -47,6 +45,9 @@
   "issueStatusCompleted": "Completed",
   "issueStatusRejected": "Rejected",
   "needsAssistanceLabel": "Needs assistance",
+
+  "awaitingInvitationTitle": "Awaiting assignment",
+  "awaitingInvitationBody": "Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.",
 
   "myIssues": "My issues",
   "noIssuesYet": "No issues reported",
@@ -94,6 +95,7 @@
   "joinTitle": "Set up access",
   "joinSubtitle": "You've been invited to live at:",
   "joinContinueButton": "Create account",
+  "joinAcceptButton": "Accept invitation",
   "joinInvalidTokenTitle": "Invalid invitation link",
   "joinInvalidTokenBody": "This link has expired or is invalid. Contact your housing administrator.",
   "joinGoToLogin": "Go to login",
@@ -101,6 +103,8 @@
   "inviteCreateTitle": "Create invitation",
   "invitePickHousing": "Select housing",
   "invitePickAddress": "Select address",
+  "inviteFilterAddresses": "Search address...",
+  "inviteNoAddressesFound": "No addresses found",
   "inviteCreatedTitle": "Invitation created",
   "inviteCreatedSubtitle": "Share this link with the tenant:",
   "inviteCopyLink": "Copy link",

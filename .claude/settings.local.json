@@ -9,7 +9,8 @@
       "Bash(Select-Object -First 20)",
       "Bash(Format-Table FullName)",
       "PowerShell(Get-ChildItem -Path \"E:\\\\arbejde\\\\flutterdev\\\\habitant\" -Recurse -Directory | Select-Object -First 30 | ForEach-Object { $_.FullName })",
-      "Bash(dir /s \"E:\\\\arbejde\\\\flutterdev\\\\habitant\\\\lib\\\\features\" /b)"
+      "Bash(dir /s \"E:\\\\arbejde\\\\flutterdev\\\\habitant\\\\lib\\\\features\" /b)",
+      "Bash(flutter test *)"
     ]
   }
 }

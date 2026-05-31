@@ -9,7 +9,15 @@ import 'login_view_model.dart';
 class LoginScreen extends StatefulWidget {
   final AuthService authService;
 
-  const LoginScreen({super.key, required this.authService});
+  /// If set, the signup link navigates to `/signup?redirect=…` so that after
+  /// creating a new account the user is returned to this path.
+  final String? redirectPath;
+
+  const LoginScreen({
+    super.key,
+    required this.authService,
+    this.redirectPath,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -75,9 +83,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     if (_viewModel.error != null) ...[
                       const SizedBox(height: 12),
-                      _ErrorMessage(
-                        message: _errorText(l10n, _viewModel.error!),
-                      ),
+                      if (_viewModel.error == LoginError.emailNotConfirmed)
+                        _EmailNotConfirmedMessage(
+                          l10n: l10n,
+                          onGoToVerification: () => context.go(
+                            '/signup',
+                            extra: _emailController.text.trim(),
+                          ),
+                        )
+                      else
+                        _ErrorMessage(
+                          message: _errorText(l10n, _viewModel.error!),
+                        ),
                     ],
                     const SizedBox(height: 24),
                     _SubmitButton(
@@ -86,7 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _submit,
                     ),
                     const SizedBox(height: 20),
-                    _SignupLink(l10n: l10n),
+                    _SignupLink(
+                      l10n: l10n,
+                      redirectPath: widget.redirectPath,
+                    ),
                   ],
                 ),
               ),
@@ -102,6 +122,8 @@ class _LoginScreenState extends State<LoginScreen> {
       switch (error) {
         LoginError.emptyFields => l10n.errorEmptyFields,
         LoginError.invalidCredentials => l10n.errorInvalidCredentials,
+        LoginError.emailNotConfirmed => l10n.errorEmailNotConfirmed,
+        LoginError.rateLimited => l10n.errorRateLimited,
         LoginError.generic => l10n.errorGeneric,
       };
 }
@@ -191,6 +213,40 @@ class _PasswordField extends StatelessWidget {
   }
 }
 
+class _EmailNotConfirmedMessage extends StatelessWidget {
+  final AppLocalizations l10n;
+  final VoidCallback onGoToVerification;
+
+  const _EmailNotConfirmedMessage({
+    required this.l10n,
+    required this.onGoToVerification,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            l10n.errorEmailNotConfirmed,
+            style: TextStyle(color: colors.error, fontSize: 13),
+          ),
+        ),
+        TextButton(
+          onPressed: onGoToVerification,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            minimumSize: Size.zero,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(l10n.goToVerification),
+        ),
+      ],
+    );
+  }
+}
+
 class _ErrorMessage extends StatelessWidget {
   final String message;
 
@@ -210,14 +266,22 @@ class _ErrorMessage extends StatelessWidget {
 
 class _SignupLink extends StatelessWidget {
   final AppLocalizations l10n;
+  final String? redirectPath;
 
-  const _SignupLink({required this.l10n});
+  const _SignupLink({required this.l10n, this.redirectPath});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: TextButton(
-        onPressed: () => context.push('/signup'),
+        onPressed: () {
+          final path = redirectPath;
+          if (path != null && path.isNotEmpty) {
+            context.push('/signup?redirect=${Uri.encodeComponent(path)}');
+          } else {
+            context.push('/signup');
+          }
+        },
         child: Text(l10n.createAccountLink),
       ),
     );
