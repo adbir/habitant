@@ -302,6 +302,114 @@ abstract class AppLocalizations {
   /// **'Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.'**
   String get awaitingInvitationBody;
 
+  /// No description provided for @adminDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get adminDashboardTitle;
+
+  /// No description provided for @adminHousingsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Housing associations'**
+  String get adminHousingsSectionTitle;
+
+  /// No description provided for @adminStatTotalAddresses.
+  ///
+  /// In en, this message translates to:
+  /// **'Total units'**
+  String get adminStatTotalAddresses;
+
+  /// No description provided for @adminStatVacant.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacant'**
+  String get adminStatVacant;
+
+  /// No description provided for @adminStatOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'Occupied'**
+  String get adminStatOccupied;
+
+  /// No description provided for @adminOpenIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} open issues'**
+  String adminOpenIssues(int count);
+
+  /// No description provided for @adminNoHousings.
+  ///
+  /// In en, this message translates to:
+  /// **'No housing associations'**
+  String get adminNoHousings;
+
+  /// No description provided for @housingAddressesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'UNITS'**
+  String get housingAddressesSection;
+
+  /// No description provided for @housingOpenIssuesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'OPEN ISSUES'**
+  String get housingOpenIssuesSection;
+
+  /// No description provided for @housingNoOpenIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'No open issues'**
+  String get housingNoOpenIssues;
+
+  /// No description provided for @addressStatusOccupied.
+  ///
+  /// In en, this message translates to:
+  /// **'Occupied'**
+  String get addressStatusOccupied;
+
+  /// No description provided for @addressStatusVacant.
+  ///
+  /// In en, this message translates to:
+  /// **'Vacant'**
+  String get addressStatusVacant;
+
+  /// No description provided for @addressStatusInvitationPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation pending'**
+  String get addressStatusInvitationPending;
+
+  /// No description provided for @addressInviteTenant.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite tenant'**
+  String get addressInviteTenant;
+
+  /// No description provided for @addressCancelInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get addressCancelInvitation;
+
+  /// No description provided for @inviteLinkCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation created'**
+  String get inviteLinkCreatedTitle;
+
+  /// No description provided for @cancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
+
+  /// No description provided for @confirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmButton;
+
   /// No description provided for @myIssues.
   ///
   /// In en, this message translates to:

@@ -115,6 +115,62 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.';
 
   @override
+  String get adminDashboardTitle => 'Overview';
+
+  @override
+  String get adminHousingsSectionTitle => 'Housing associations';
+
+  @override
+  String get adminStatTotalAddresses => 'Total units';
+
+  @override
+  String get adminStatVacant => 'Vacant';
+
+  @override
+  String get adminStatOccupied => 'Occupied';
+
+  @override
+  String adminOpenIssues(int count) {
+    return '$count open issues';
+  }
+
+  @override
+  String get adminNoHousings => 'No housing associations';
+
+  @override
+  String get housingAddressesSection => 'UNITS';
+
+  @override
+  String get housingOpenIssuesSection => 'OPEN ISSUES';
+
+  @override
+  String get housingNoOpenIssues => 'No open issues';
+
+  @override
+  String get addressStatusOccupied => 'Occupied';
+
+  @override
+  String get addressStatusVacant => 'Vacant';
+
+  @override
+  String get addressStatusInvitationPending => 'Invitation pending';
+
+  @override
+  String get addressInviteTenant => 'Invite tenant';
+
+  @override
+  String get addressCancelInvitation => 'Cancel';
+
+  @override
+  String get inviteLinkCreatedTitle => 'Invitation created';
+
+  @override
+  String get cancelButton => 'Cancel';
+
+  @override
+  String get confirmButton => 'Confirm';
+
+  @override
   String get myIssues => 'My issues';
 
   @override

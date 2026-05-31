@@ -49,6 +49,30 @@
   "awaitingInvitationTitle": "Afventer tildeling",
   "awaitingInvitationBody": "Din konto er oprettet. Når din boligforening sender dig et invitationslink, kan du bruge det til at tilknytte din bolig.",
 
+  "adminDashboardTitle": "Overblik",
+  "adminHousingsSectionTitle": "Boligforeninger",
+  "adminStatTotalAddresses": "Boliger i alt",
+  "adminStatVacant": "Ledige",
+  "adminStatOccupied": "Beboede",
+  "adminOpenIssues": "{count} åbne sager",
+  "@adminOpenIssues": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "adminNoHousings": "Ingen boligforeninger",
+  "housingAddressesSection": "BOLIGER",
+  "housingOpenIssuesSection": "ÅBNE SAGER",
+  "housingNoOpenIssues": "Ingen åbne sager",
+  "addressStatusOccupied": "Beboet",
+  "addressStatusVacant": "Ledig",
+  "addressStatusInvitationPending": "Invitation afventer",
+  "addressInviteTenant": "Inviter lejer",
+  "addressCancelInvitation": "Annuller",
+  "inviteLinkCreatedTitle": "Invitation oprettet",
+  "cancelButton": "Annuller",
+  "confirmButton": "Bekræft",
+
   "myIssues": "Mine meldinger",
   "noIssuesYet": "Ingen meldinger endnu",
   "noIssuesYetSubtitle": "Tryk på knappen nedenfor for at melde et problem i din bolig.",

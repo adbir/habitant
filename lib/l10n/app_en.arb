@@ -49,6 +49,30 @@
   "awaitingInvitationTitle": "Awaiting assignment",
   "awaitingInvitationBody": "Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.",
 
+  "adminDashboardTitle": "Overview",
+  "adminHousingsSectionTitle": "Housing associations",
+  "adminStatTotalAddresses": "Total units",
+  "adminStatVacant": "Vacant",
+  "adminStatOccupied": "Occupied",
+  "adminOpenIssues": "{count} open issues",
+  "@adminOpenIssues": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "adminNoHousings": "No housing associations",
+  "housingAddressesSection": "UNITS",
+  "housingOpenIssuesSection": "OPEN ISSUES",
+  "housingNoOpenIssues": "No open issues",
+  "addressStatusOccupied": "Occupied",
+  "addressStatusVacant": "Vacant",
+  "addressStatusInvitationPending": "Invitation pending",
+  "addressInviteTenant": "Invite tenant",
+  "addressCancelInvitation": "Cancel",
+  "inviteLinkCreatedTitle": "Invitation created",
+  "cancelButton": "Cancel",
+  "confirmButton": "Confirm",
+
   "myIssues": "My issues",
   "noIssuesYet": "No issues reported",
   "noIssuesYetSubtitle": "Tap the button below to report a problem in your home.",

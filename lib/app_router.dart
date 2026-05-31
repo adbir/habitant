@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'core/models/housing.dart';
 import 'core/models/issue.dart';
 import 'core/models/user_role.dart';
 import 'core/services/api_client.dart';
@@ -8,6 +9,8 @@ import 'core/services/auth_service.dart';
 import 'core/services/theme_mode_service.dart';
 import 'features/auth/presentation/admin_invite_screen.dart';
 import 'features/auth/presentation/join_screen.dart';
+import 'features/staff/presentation/admin_dashboard_screen.dart';
+import 'features/staff/presentation/housing_detail_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/signup_screen.dart';
 import 'features/maintenance/presentation/issue_detail_screen.dart';
@@ -15,6 +18,14 @@ import 'features/maintenance/presentation/maintenance_dashboard_screen.dart';
 import 'features/tenant/presentation/report_issue_screen.dart';
 import 'features/tenant/presentation/tenant_home_screen.dart';
 import 'features/tenant/presentation/tenant_issue_detail_screen.dart';
+
+/// Pure redirect logic — no Flutter or Supabase dependencies.
+///
+/// Extracted so it can be unit-tested without a GoRouter or AuthService
+/// instance. [AppRouter._redirect] is a thin wrapper around this function.
+/// Whether [role] can access the admin dashboard (`/admin` routes).
+bool _canAccessAdmin(UserRole role) =>
+    role.isAdmin || role.isHousingManager || role.isRootAdmin;
 
 /// Pure redirect logic — no Flutter or Supabase dependencies.
 ///
@@ -47,12 +58,19 @@ String? computeAuthRedirect({
   // by JoinScreen itself (via JoinStep.complete), not the router.
   if (location == '/join') return null;
 
+  // Non-admin staff (e.g. maintenanceStaff) may not access /admin routes.
+  if (location.startsWith('/admin') && !_canAccessAdmin(role)) {
+    return role.isStaff ? '/staff' : '/tenant';
+  }
+
   // Authenticated with a profile — redirect away from other auth screens.
   if (location == '/login' || location == '/signup') {
     if (pendingRedirect != null && pendingRedirect.isNotEmpty) {
       return pendingRedirect;
     }
-    return role.isStaff ? '/staff' : '/tenant';
+    if (_canAccessAdmin(role)) return '/admin';
+    if (role.isStaff) return '/staff';
+    return '/tenant';
   }
 
   // Non-staff may not access /staff routes.
@@ -154,6 +172,24 @@ class AppRouter {
             GoRoute(
               path: 'invite',
               builder: (context, state) => AdminInviteScreen(
+                apiClient: _apiClient,
+                authService: _authService,
+              ),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: '/admin',
+          builder: (context, state) => AdminDashboardScreen(
+            apiClient: _apiClient,
+            authService: _authService,
+            themeModeService: _themeModeService,
+          ),
+          routes: [
+            GoRoute(
+              path: 'housing/:id',
+              builder: (context, state) => HousingDetailScreen(
+                initialHousing: state.extra as Housing,
                 apiClient: _apiClient,
                 authService: _authService,
               ),
