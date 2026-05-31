@@ -95,6 +95,7 @@
   "joinTitle": "Opret adgang",
   "joinSubtitle": "Du er inviteret til at bo på:",
   "joinContinueButton": "Opret konto",
+  "joinAcceptButton": "Accepter invitation",
   "joinInvalidTokenTitle": "Ugyldigt invitationslink",
   "joinInvalidTokenBody": "Dette link er udløbet eller ugyldigt. Kontakt din boligadministrator.",
   "joinGoToLogin": "Gå til login",

@@ -8,7 +8,7 @@ import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
 
 /// The sequential steps of the invite-based join flow.
-enum JoinStep { loading, invalidToken, preview, credentials, verification }
+enum JoinStep { loading, invalidToken, preview, credentials, verification, complete }
 
 /// Reasons a join step can fail — mapped to localized strings in the UI.
 enum JoinError {
@@ -44,19 +44,30 @@ class JoinViewModel extends ChangeNotifier {
   String _email = '';
   String? _phoneNumber;
 
-  static SupabaseClient get _client => Supabase.instance.client;
+  late final SupabaseClient _client;
 
   JoinViewModel({
     required ApiClient apiClient,
     required AuthService authService,
+    SupabaseClient? supabaseClient,
   })  : _apiClient = apiClient,
-        _authService = authService;
+        _authService = authService,
+        _client = supabaseClient ?? Supabase.instance.client;
 
   JoinStep get step => _step;
   bool get isLoading => _isLoading;
   JoinError? get error => _error;
   String get email => _email;
   Invitation? get invitation => _invitation;
+
+  /// Whether the current user is already signed in with a confirmed email.
+  ///
+  /// When true the preview step skips credentials and OTP — the invitation is
+  /// claimed with a single tap.
+  bool get isAlreadyAuthenticated {
+    final user = _client.auth.currentUser;
+    return user != null && user.emailConfirmedAt != null;
+  }
 
   // ---- Token loading --------------------------------------------------------
 
@@ -214,7 +225,8 @@ class JoinViewModel extends ChangeNotifier {
       'tenant_flags': 1,
     });
     await _authService.joinComplete();
-    // GoRouter redirect takes over from here.
+    _step = JoinStep.complete;
+    // JoinScreen listens for complete and calls context.go('/tenant').
   }
 
   Future<void> resendCode() async {

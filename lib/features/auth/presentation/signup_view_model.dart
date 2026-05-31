@@ -35,12 +35,14 @@ class SignupViewModel extends ChangeNotifier {
   String _email = '';
   String? _phoneNumber;
 
-  static SupabaseClient get _client => Supabase.instance.client;
+  late final SupabaseClient _client;
 
   SignupViewModel({
     required AuthService authService,
     String? verifyEmail,
-  }) : _authService = authService {
+    SupabaseClient? supabaseClient,
+  })  : _authService = authService,
+        _client = supabaseClient ?? Supabase.instance.client {
     _resumePendingSignup(verifyEmail);
   }
 

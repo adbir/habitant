@@ -230,6 +230,9 @@ class AppLocalizationsDa extends AppLocalizations {
   String get joinContinueButton => 'Opret konto';
 
   @override
+  String get joinAcceptButton => 'Accepter invitation';
+
+  @override
   String get joinInvalidTokenTitle => 'Ugyldigt invitationslink';
 
   @override

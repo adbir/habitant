@@ -229,6 +229,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get joinContinueButton => 'Create account';
 
   @override
+  String get joinAcceptButton => 'Accept invitation';
+
+  @override
   String get joinInvalidTokenTitle => 'Invalid invitation link';
 
   @override

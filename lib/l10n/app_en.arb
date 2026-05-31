@@ -95,6 +95,7 @@
   "joinTitle": "Set up access",
   "joinSubtitle": "You've been invited to live at:",
   "joinContinueButton": "Create account",
+  "joinAcceptButton": "Accept invitation",
   "joinInvalidTokenTitle": "Invalid invitation link",
   "joinInvalidTokenBody": "This link has expired or is invalid. Contact your housing administrator.",
   "joinGoToLogin": "Go to login",

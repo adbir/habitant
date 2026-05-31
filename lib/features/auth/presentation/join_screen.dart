@@ -42,11 +42,19 @@ class _JoinScreenState extends State<JoinScreen> {
       apiClient: widget.apiClient,
       authService: widget.authService,
     );
+    _viewModel.addListener(_onViewModelChanged);
     _viewModel.loadInvitation(widget.token);
+  }
+
+  void _onViewModelChanged() {
+    if (_viewModel.step == JoinStep.complete && mounted) {
+      context.go('/tenant');
+    }
   }
 
   @override
   void dispose() {
+    _viewModel.removeListener(_onViewModelChanged);
     _viewModel.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -130,6 +138,8 @@ class _JoinScreenState extends State<JoinScreen> {
           onSubmit: _viewModel.submitCode,
           onResend: _viewModel.resendCode,
         ),
+      // Navigation is handled by _onViewModelChanged; show a spinner briefly.
+      JoinStep.complete => const Center(child: CircularProgressIndicator()),
     };
   }
 }
@@ -215,10 +225,19 @@ class _PreviewStep extends StatelessWidget {
           style: FilledButton.styleFrom(
             minimumSize: const Size.fromHeight(52),
           ),
-          child: Text(l10n.joinContinueButton),
+          child: Text(
+            viewModel.isAlreadyAuthenticated
+                ? l10n.joinAcceptButton
+                : l10n.joinContinueButton,
+          ),
         ),
-        const SizedBox(height: 16),
-        _GoToLoginLink(l10n: l10n),
+        if (!viewModel.isAlreadyAuthenticated) ...[
+          const SizedBox(height: 16),
+          _GoToLoginLink(
+            l10n: l10n,
+            redirectPath: '/join?token=${inv.token}',
+          ),
+        ],
       ],
     );
   }
@@ -277,7 +296,10 @@ class _AddressPreviewCard extends StatelessWidget {
 class _GoToLoginLink extends StatelessWidget {
   final AppLocalizations l10n;
 
-  const _GoToLoginLink({required this.l10n});
+  /// The join path to return to after login, e.g. `/join?token=abc`.
+  final String redirectPath;
+
+  const _GoToLoginLink({required this.l10n, required this.redirectPath});
 
   @override
   Widget build(BuildContext context) {
@@ -291,7 +313,10 @@ class _GoToLoginLink extends StatelessWidget {
           style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
         ),
         TextButton(
-          onPressed: () => context.go('/login'),
+          onPressed: () {
+            final encoded = Uri.encodeComponent(redirectPath);
+            context.go('/login?redirect=$encoded');
+          },
           style: TextButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             minimumSize: Size.zero,

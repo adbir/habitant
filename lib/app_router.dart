@@ -16,6 +16,53 @@ import 'features/tenant/presentation/report_issue_screen.dart';
 import 'features/tenant/presentation/tenant_home_screen.dart';
 import 'features/tenant/presentation/tenant_issue_detail_screen.dart';
 
+/// Pure redirect logic — no Flutter or Supabase dependencies.
+///
+/// Extracted so it can be unit-tested without a GoRouter or AuthService
+/// instance. [AppRouter._redirect] is a thin wrapper around this function.
+String? computeAuthRedirect({
+  required bool isAuthenticated,
+  required UserRole? role,
+  required String location,
+  required bool joinInProgress,
+  String? pendingRedirect,
+}) {
+  const publicRoutes = {'/login', '/signup', '/join'};
+
+  if (!isAuthenticated) {
+    return publicRoutes.contains(location) ? null : '/login';
+  }
+
+  // Authenticated but no profile row yet (incomplete signup/join).
+  if (role == null) {
+    if (location == '/login' || location == '/signup' || location == '/join') {
+      return null;
+    }
+    if (joinInProgress) return '/join';
+    return '/signup';
+  }
+
+  // /join is open to all authenticated users — they may be claiming an
+  // invitation. Navigation away from /join after a successful claim is handled
+  // by JoinScreen itself (via JoinStep.complete), not the router.
+  if (location == '/join') return null;
+
+  // Authenticated with a profile — redirect away from other auth screens.
+  if (location == '/login' || location == '/signup') {
+    if (pendingRedirect != null && pendingRedirect.isNotEmpty) {
+      return pendingRedirect;
+    }
+    return role.isStaff ? '/staff' : '/tenant';
+  }
+
+  // Non-staff may not access /staff routes.
+  if (location.startsWith('/staff') && !role.isStaff) {
+    return '/tenant';
+  }
+
+  return null;
+}
+
 /// Configures all application routes and authentication-based redirects.
 ///
 /// Listens to [AuthService] and re-evaluates redirects on every auth change,
@@ -123,42 +170,12 @@ class AppRouter {
     );
   }
 
-  String? _redirect(BuildContext context, GoRouterState state) {
-    final isAuth = _authService.isAuthenticated;
-    final role = _authService.role;
-    final location = state.matchedLocation;
-    final publicRoutes = {'/login', '/signup', '/join'};
-
-    if (!isAuth) {
-      return publicRoutes.contains(location) ? null : '/login';
-    }
-
-    // Authenticated but no profile row yet (incomplete signup/join).
-    if (role == null) {
-      // Allow /login so the user can bail to an existing account.
-      if (location == '/login' || location == '/signup' || location == '/join') {
-        return null;
-      }
-      if (_authService.joinInProgress) return '/join';
-      return '/signup';
-    }
-
-    // Let an in-progress join claim finish even if a role already exists
-    // (user had a bare account from /signup and is now claiming an invitation).
-    if (_authService.joinInProgress && location == '/join') return null;
-
-    // Authenticated with a profile — redirect away from auth screens.
-    if (location == '/login' ||
-        location == '/signup' ||
-        location == '/join') {
-      return role.isStaff ? '/staff' : '/tenant';
-    }
-
-    // Non-staff may not access /staff routes.
-    if (location.startsWith('/staff') && !role.isStaff) {
-      return '/tenant';
-    }
-
-    return null;
-  }
+  String? _redirect(BuildContext context, GoRouterState state) =>
+      computeAuthRedirect(
+        isAuthenticated: _authService.isAuthenticated,
+        role: _authService.role,
+        location: state.matchedLocation,
+        joinInProgress: _authService.joinInProgress,
+        pendingRedirect: state.uri.queryParameters['redirect'],
+      );
 }

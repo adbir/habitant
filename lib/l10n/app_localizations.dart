@@ -518,6 +518,12 @@ abstract class AppLocalizations {
   /// **'Create account'**
   String get joinContinueButton;
 
+  /// No description provided for @joinAcceptButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invitation'**
+  String get joinAcceptButton;
+
   /// No description provided for @joinInvalidTokenTitle.
   ///
   /// In en, this message translates to:
