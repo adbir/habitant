@@ -89,8 +89,10 @@ class AppRouter {
       routes: [
         GoRoute(
           path: '/login',
-          builder: (context, state) =>
-              LoginScreen(authService: _authService),
+          builder: (context, state) => LoginScreen(
+            authService: _authService,
+            redirectPath: state.uri.queryParameters['redirect'],
+          ),
         ),
         GoRoute(
           path: '/signup',

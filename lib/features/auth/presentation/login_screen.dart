@@ -9,7 +9,15 @@ import 'login_view_model.dart';
 class LoginScreen extends StatefulWidget {
   final AuthService authService;
 
-  const LoginScreen({super.key, required this.authService});
+  /// If set, the signup link navigates to `/signup?redirect=…` so that after
+  /// creating a new account the user is returned to this path.
+  final String? redirectPath;
+
+  const LoginScreen({
+    super.key,
+    required this.authService,
+    this.redirectPath,
+  });
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -95,7 +103,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: _submit,
                     ),
                     const SizedBox(height: 20),
-                    _SignupLink(l10n: l10n),
+                    _SignupLink(
+                      l10n: l10n,
+                      redirectPath: widget.redirectPath,
+                    ),
                   ],
                 ),
               ),
@@ -255,14 +266,22 @@ class _ErrorMessage extends StatelessWidget {
 
 class _SignupLink extends StatelessWidget {
   final AppLocalizations l10n;
+  final String? redirectPath;
 
-  const _SignupLink({required this.l10n});
+  const _SignupLink({required this.l10n, this.redirectPath});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: TextButton(
-        onPressed: () => context.push('/signup'),
+        onPressed: () {
+          final path = redirectPath;
+          if (path != null && path.isNotEmpty) {
+            context.push('/signup?redirect=${Uri.encodeComponent(path)}');
+          } else {
+            context.push('/signup');
+          }
+        },
         child: Text(l10n.createAccountLink),
       ),
     );

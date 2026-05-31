@@ -43,7 +43,7 @@ class AdminInviteViewModel extends ChangeNotifier {
   /// The full deep link URL for the created invitation.
   String get invitationLink {
     final token = _createdInvitation?.token ?? '';
-    return 'https://habitant.app/join?token=$token';
+    return 'https://adbir.github.io/habitant/#/join?token=$token';
   }
 
   Future<void> load() async {

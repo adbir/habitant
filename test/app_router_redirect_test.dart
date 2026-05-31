@@ -152,6 +152,19 @@ void main() {
       ).equals('/tenant');
     });
 
+    test('authenticated tenant on /signup with pendingRedirect goes there', () {
+      // User created an account via /signup?redirect=/join?token=X
+      // After signup completes the router should honour the redirect.
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.tenant,
+          location: '/signup',
+          pendingRedirect: '/join?token=abc',
+        ),
+      ).equals('/join?token=abc');
+    });
+
     test('pendingRedirect is ignored for unauthenticated users', () {
       // Unauthenticated users are allowed to stay on /login — no redirect.
       check(
