@@ -62,10 +62,7 @@ class AdminDashboardViewModel extends ChangeNotifier {
       final counts = <String, int>{};
       for (var i = 0; i < housings.length; i++) {
         counts[housings[i].id] = issueLists[i]
-<<<<<<< HEAD
-=======
             .items
->>>>>>> administration-overview
             .where((issue) =>
                 issue.status != IssueStatus.completed &&
                 issue.status != IssueStatus.rejected)

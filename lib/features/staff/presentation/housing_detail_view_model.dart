@@ -5,10 +5,6 @@ import 'package:flutter/foundation.dart';
 import '../../../core/models/address.dart';
 import '../../../core/models/housing.dart';
 import '../../../core/models/invitation.dart';
-<<<<<<< HEAD
-import '../../../core/models/issue.dart';
-=======
->>>>>>> administration-overview
 import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
 
@@ -17,22 +13,13 @@ enum AddressStatus { occupied, invitationPending, vacant }
 
 /// Drives the housing detail screen for admins.
 ///
-<<<<<<< HEAD
-/// Shows all addresses with their occupancy/invitation status, pending
-/// invitations (with cancel support), and open issues for the housing.
-=======
 /// Manages addresses, their occupancy status, and invitation actions.
 /// Issues are handled separately by [HousingIssuesViewModel].
->>>>>>> administration-overview
 class HousingDetailViewModel extends ChangeNotifier {
   final ApiClient _apiClient;
 
   final Housing _housing;
   List<Invitation> _invitations = const [];
-<<<<<<< HEAD
-  List<Issue> _openIssues = const [];
-=======
->>>>>>> administration-overview
   bool _isLoading = false;
   bool _hasError = false;
 
@@ -49,10 +36,6 @@ class HousingDetailViewModel extends ChangeNotifier {
 
   Housing get housing => _housing;
   List<Invitation> get invitations => List.unmodifiable(_invitations);
-<<<<<<< HEAD
-  List<Issue> get openIssues => List.unmodifiable(_openIssues);
-=======
->>>>>>> administration-overview
   bool get isLoading => _isLoading;
   bool get hasError => _hasError;
 
@@ -87,22 +70,7 @@ class HousingDetailViewModel extends ChangeNotifier {
     _hasError = false;
     notifyListeners();
     try {
-<<<<<<< HEAD
-      final results = await Future.wait([
-        _apiClient.getHousingInvitations(_housing.id),
-        _apiClient.getHousingIssues(_housing.id),
-      ]);
-      _invitations = results[0] as List<Invitation>;
-      _openIssues = (results[1] as List<Issue>)
-          .where(
-            (i) =>
-                i.status != IssueStatus.completed &&
-                i.status != IssueStatus.rejected,
-          )
-          .toList();
-=======
       _invitations = await _apiClient.getHousingInvitations(_housing.id);
->>>>>>> administration-overview
     } catch (e, s) {
       developer.log(
         'Failed to load housing detail',
