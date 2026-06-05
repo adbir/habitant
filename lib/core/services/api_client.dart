@@ -7,6 +7,7 @@ import '../models/address.dart';
 import '../models/housing.dart';
 import '../models/invitation.dart';
 import '../models/issue.dart';
+import '../models/paged_result.dart';
 import '../models/tenant_profile.dart';
 
 class ApiClient {
@@ -286,11 +287,15 @@ class ApiClient {
     );
   }
 
-  Future<List<Issue>> getHousingIssues(String housingId) async {
-    return _getList(
-      '/housing/$housingId/issues',
-      Issue.fromJson,
-    );
+  Future<PagedResult<Issue>> getHousingIssues(
+    String housingId, {
+    Set<IssueStatus>? statuses,
+    int page = 0,
+    int pageSize = 25,
+  }) async {
+    // Real implementation: build query string and call the backend.
+    // For now, throw UnimplementedError() — the fake client is the live impl.
+    throw UnimplementedError();
   }
 
   /// Returns a single issue by ID.
@@ -346,6 +351,11 @@ class ApiClient {
 
   /// Cancels an invitation by setting its [cancelled_at] timestamp.
   Future<void> cancelInvitation(String invitationId) async {
+    throw UnimplementedError();
+  }
+
+  /// Returns active (non-expired, non-cancelled) invitations for [housingId].
+  Future<List<Invitation>> getHousingInvitations(String housingId) async {
     throw UnimplementedError();
   }
 

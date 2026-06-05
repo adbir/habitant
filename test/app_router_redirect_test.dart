@@ -262,38 +262,57 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('authenticated admin', () {
-    test('is redirected from /login to /staff', () {
+    test('is redirected from /login to /admin', () {
       check(
         redirect(
           isAuthenticated: true,
           role: UserRole.admin,
           location: '/login',
         ),
-      ).equals('/staff');
+      ).equals('/admin');
     });
 
-    test('is redirected from /signup to /staff', () {
+    test('is redirected from /signup to /admin', () {
       check(
         redirect(
           isAuthenticated: true,
           role: UserRole.admin,
           location: '/signup',
         ),
-      ).equals('/staff');
+      ).equals('/admin');
     });
 
-    test('authenticated admin on /join is allowed (invitation claim)', () {
+    test('is allowed on /join (invitation claim)', () {
       check(
         redirect(
           isAuthenticated: true,
           role: UserRole.admin,
           location: '/join',
-          joinInProgress: false,
         ),
       ).isNull();
     });
 
-    test('is allowed on /staff', () {
+    test('is allowed on /admin', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.admin,
+          location: '/admin',
+        ),
+      ).isNull();
+    });
+
+    test('is allowed on /admin/housing/123', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.admin,
+          location: '/admin/housing/123',
+        ),
+      ).isNull();
+    });
+
+    test('is allowed on /staff (to navigate to issue detail etc.)', () {
       check(
         redirect(
           isAuthenticated: true,
@@ -337,6 +356,70 @@ void main() {
           location: '/staff',
         ),
       ).isNull();
+    });
+
+    test('is blocked from /admin — redirected to /staff', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.maintenanceStaff,
+          location: '/admin',
+        ),
+      ).equals('/staff');
+    });
+
+    test('is blocked from /admin/housing/123 — redirected to /staff', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.maintenanceStaff,
+          location: '/admin/housing/123',
+        ),
+      ).equals('/staff');
+    });
+  });
+
+  group('authenticated housingManager', () {
+    test('is redirected from /login to /admin', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.housingManager,
+          location: '/login',
+        ),
+      ).equals('/admin');
+    });
+
+    test('is allowed on /admin', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.housingManager,
+          location: '/admin',
+        ),
+      ).isNull();
+    });
+  });
+
+  group('tenant on admin routes', () {
+    test('is redirected from /admin to /tenant', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.tenant,
+          location: '/admin',
+        ),
+      ).equals('/tenant');
+    });
+
+    test('is redirected from /admin/housing/123 to /tenant', () {
+      check(
+        redirect(
+          isAuthenticated: true,
+          role: UserRole.tenant,
+          location: '/admin/housing/123',
+        ),
+      ).equals('/tenant');
     });
   });
 }

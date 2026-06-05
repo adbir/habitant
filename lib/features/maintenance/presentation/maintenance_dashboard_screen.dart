@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../core/models/issue.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
-import '../../../core/services/theme_mode_service.dart';
 import '../../../core/widgets/adaptive_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import 'maintenance_dashboard_view_model.dart';
@@ -14,13 +12,11 @@ import 'maintenance_dashboard_view_model.dart';
 class MaintenanceDashboardScreen extends StatefulWidget {
   final ApiClient apiClient;
   final AuthService authService;
-  final ThemeModeService themeModeService;
 
   const MaintenanceDashboardScreen({
     super.key,
     required this.apiClient,
     required this.authService,
-    required this.themeModeService,
   });
 
   @override
@@ -51,50 +47,30 @@ class _MaintenanceDashboardScreenState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.maintenanceTitle),
-        actions: [
-          if (kDebugMode)
-            ListenableBuilder(
-              listenable: widget.themeModeService,
-              builder: (context, _) => Switch(
-                value: widget.themeModeService.isDark,
-                onChanged: (_) => widget.themeModeService.toggle(),
-                thumbIcon: WidgetStateProperty.resolveWith((states) {
-                  return Icon(
-                    widget.themeModeService.isDark
-                        ? Icons.dark_mode
-                        : Icons.light_mode,
-                    size: 16,
-                  );
-                }),
-              ),
+    return Stack(
+      children: [
+        AdaptiveLayout(
+          child: ListenableBuilder(
+            listenable: _viewModel,
+            builder: (context, _) => Row(
+              children: [
+                _StatusSidebar(viewModel: _viewModel, l10n: l10n),
+                const VerticalDivider(width: 1, thickness: 1),
+                Expanded(child: _buildBody(context, l10n)),
+              ],
             ),
-          IconButton(
-            icon: const Icon(Icons.mail_outline),
-            tooltip: l10n.inviteCreateTitle,
-            onPressed: () => context.push('/staff/invite'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: l10n.logoutTooltip,
-            onPressed: widget.authService.logout,
-          ),
-        ],
-      ),
-      body: AdaptiveLayout(
-        child: ListenableBuilder(
-          listenable: _viewModel,
-          builder: (context, _) => Row(
-            children: [
-              _StatusSidebar(viewModel: _viewModel, l10n: l10n),
-              const VerticalDivider(width: 1, thickness: 1),
-              Expanded(child: _buildBody(context, l10n)),
-            ],
           ),
         ),
-      ),
+        Positioned(
+          bottom: 16,
+          right: 16,
+          child: FloatingActionButton(
+            onPressed: () => context.push('/staff/invite'),
+            tooltip: l10n.inviteCreateTitle,
+            child: const Icon(Icons.mail_outline),
+          ),
+        ),
+      ],
     );
   }
 

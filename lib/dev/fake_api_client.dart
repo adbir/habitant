@@ -9,6 +9,7 @@ import '../core/models/invitation.dart';
 import '../core/models/issue.dart';
 import '../core/models/issue_comment.dart';
 import '../core/models/maintenance_update.dart';
+import '../core/models/paged_result.dart';
 import '../core/models/tenant_profile.dart';
 import '../core/models/user_role.dart';
 import '../core/services/api_client.dart';
@@ -33,6 +34,7 @@ class FakeApiClient extends ApiClient {
   final _tenants = List<TenantProfile>.of(_seedTenants);
   final _housings = List<Housing>.of(_seedHousings);
   final _issues = List<Issue>.of(_seedIssues);
+  final _invitations = List<Invitation>.of(_seedInvitations);
 
   Future<void> _wait() => Future.delayed(_networkDelay);
 
@@ -229,9 +231,24 @@ class FakeApiClient extends ApiClient {
   }
 
   @override
-  Future<List<Issue>> getHousingIssues(String housingId) async {
+  Future<PagedResult<Issue>> getHousingIssues(
+    String housingId, {
+    Set<IssueStatus>? statuses,
+    int page = 0,
+    int pageSize = 25,
+  }) async {
     await _wait();
-    return _issues.where((i) => i.housingId == housingId).toList();
+    final filtered = _issues
+        .where((i) => i.housingId == housingId)
+        .where(
+          (i) => statuses == null || statuses.contains(i.status),
+        )
+        .toList();
+    final start = page * pageSize;
+    final end = (start + pageSize).clamp(0, filtered.length);
+    final items =
+        start >= filtered.length ? <Issue>[] : filtered.sublist(start, end);
+    return PagedResult(items: items, hasMore: end < filtered.length);
   }
 
   // ---- Maintenance ---------------------------------------------------------
@@ -344,22 +361,35 @@ class FakeApiClient extends ApiClient {
           (a) => a.id == addressId,
           orElse: () => throw ApiException(404, 'Address not found'),
         );
-    final housing =
-        _housings.firstWhere((h) => h.id == address.housingId);
-    return Invitation(
+    final housing = _housings.firstWhere((h) => h.id == address.housingId);
+    final inv = Invitation(
       id: _uuid.v4(),
-      token: _fakeInvitationToken,
+      token: _uuid.v4(),
       addressId: addressId,
       expiresAt: DateTime.now().add(const Duration(days: 30)),
       address: address,
       housingName: housing.name,
     );
+    _invitations.add(inv);
+    return inv;
   }
 
   @override
   Future<void> cancelInvitation(String invitationId) async {
     await _wait();
-    // No-op in dev — invitations are not persisted.
+    _invitations.removeWhere((inv) => inv.id == invitationId);
+  }
+
+  @override
+  Future<List<Invitation>> getHousingInvitations(String housingId) async {
+    await _wait();
+    return _invitations.where((inv) {
+      if (inv.isExpired) return false;
+      final address = _housings
+          .expand((h) => h.addresses)
+          .firstWhere((a) => a.id == inv.addressId, orElse: () => throw StateError(''));
+      return address.housingId == housingId;
+    }).toList();
   }
 
   Invitation _fakeInvitation() {
@@ -450,6 +480,9 @@ class FakeApiClient extends ApiClient {
   static const _idCommentR2 = 'cc000001-0000-0000-0000-000000000002';
   static const _idCommentM1 = 'cc000001-0000-0000-0000-000000000003';
   static const _idCommentH1 = 'cc000001-0000-0000-0000-000000000004';
+
+  // Invitation IDs
+  static const _idInvite1 = 'inv-00000001-0000-0000-0000-000000000001';
 
   // Tenants
   static final _seedTenants = <TenantProfile>[
@@ -707,6 +740,19 @@ class FakeApiClient extends ApiClient {
         ),
       ],
       createdAt: DateTime(2024, 11, 8),
+    ),
+  ];
+
+  // Invitations — one seed invitation on a vacant AAB address
+  static final _seedInvitations = <Invitation>[
+    Invitation(
+      id: _idInvite1,
+      token: _fakeInvitationToken,
+      addressId: _idAddrToms157Stv,
+      expiresAt: DateTime(2030, 12, 31),
+      address: _seedHousings[0].addresses
+          .firstWhere((a) => a.id == _idAddrToms157Stv),
+      housingName: 'AAB Nørrebro',
     ),
   ];
 }

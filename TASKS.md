@@ -1,0 +1,68 @@
+# Habitant — task backlog
+
+Status markers: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` deferred
+
+---
+
+## Housing detail — scale for 275 units / 1000 issues
+
+Current screen dumps everything into one list. Needs tabs + server-side
+filtering + pagination before it hits real data.
+
+- [x] **Add TabBar to HousingDetailScreen** — `DefaultTabController(length:2)`,
+  city + `TabBar` in AppBar bottom, `TabBarView` with `_UnitsTab` and
+  `_IssuesTab`. `_SectionHeader` removed.
+
+- [x] **Server-side issue status filter + pagination** — `getHousingIssues`
+  now takes `{Set<IssueStatus>? statuses, int page, int pageSize}` and returns
+  `PagedResult<Issue>`. `FakeApiClient` filters and slices. `PagedResult<T>`
+  model added at `lib/core/models/paged_result.dart`.
+
+- [x] **HousingIssuesViewModel** — `load()`, `loadMore()`, `refresh()`,
+  concurrent-guard on `loadMore()`. Issues tab wired to this VM;
+  `HousingDetailViewModel` now only manages invitations.
+
+- [x] **Scroll-to-load-more on Issues tab** — `NotificationListener` fires
+  `loadMore()` within 200 px of bottom; spinner appended as last list item
+  while `hasMore` is true.
+
+- [x] **Widget tests for HousingIssuesViewModel** — 9 tests: load, load-more,
+  error, loading-guard, refresh. All 89 project tests pass.
+
+- [-] **Decouple Housing.addresses from list fetch** — `getHousings()` should
+  return summary counts, not full address lists. Needs a `HousingSummary`
+  model and a separate `getHousingAddresses(id, page)` endpoint. Blocked on
+  the backend swagger. Revisit when the REST API spec lands.
+
+---
+
+## Known gaps elsewhere
+
+- [ ] **Tenant issue detail screen** — tenant taps an issue card and sees the
+  full description, photos, and any *public* comments. Staff-only (private)
+  comments must be hidden. Route `/tenant/issues/:id` exists; screen
+  `TenantIssueDetailScreen` is a stub.
+
+- [ ] **Join flow router timing bug** — an already-authenticated user who
+  opens an invitation link is momentarily redirected to `/tenant` before
+  `joinInProgress` is set, losing the token. Needs a fix in
+  `computeAuthRedirect` or the `JoinScreen` entry path.
+  See memory: `project_join_flow_bugs.md`.
+
+- [ ] **Profile / housing switcher** — tenant profile page where a user can
+  see their current address and claim a new invitation link to move housing.
+  Not started.
+
+---
+
+## Infrastructure / quality
+
+- [ ] **Restore integration_test setup for full login flow** — the
+  `integration_test/` and `test_driver/` directories were removed when
+  switching to widget tests. A real end-to-end test (launch app in Chrome,
+  log in as `lars@example.com`, verify navigation shell) still needs the
+  `flutter drive` + ChromeDriver path wired up.
+
+- [ ] **Real ApiClient implementations** — `getHousingInvitations`,
+  `createInvitation`, `cancelInvitation` all `throw UnimplementedError()` in
+  the real `ApiClient`. Will need wiring once the backend swagger arrives.

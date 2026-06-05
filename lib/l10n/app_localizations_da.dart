@@ -115,6 +115,62 @@ class AppLocalizationsDa extends AppLocalizations {
       'Din konto er oprettet. Når din boligforening sender dig et invitationslink, kan du bruge det til at tilknytte din bolig.';
 
   @override
+  String get adminDashboardTitle => 'Overblik';
+
+  @override
+  String get adminHousingsSectionTitle => 'Boligforeninger';
+
+  @override
+  String get adminStatTotalAddresses => 'Boliger i alt';
+
+  @override
+  String get adminStatVacant => 'Ledige';
+
+  @override
+  String get adminStatOccupied => 'Beboede';
+
+  @override
+  String adminOpenIssues(int count) {
+    return '$count åbne sager';
+  }
+
+  @override
+  String get adminNoHousings => 'Ingen boligforeninger';
+
+  @override
+  String get housingAddressesSection => 'BOLIGER';
+
+  @override
+  String get housingOpenIssuesSection => 'ÅBNE SAGER';
+
+  @override
+  String get housingNoOpenIssues => 'Ingen åbne sager';
+
+  @override
+  String get addressStatusOccupied => 'Beboet';
+
+  @override
+  String get addressStatusVacant => 'Ledig';
+
+  @override
+  String get addressStatusInvitationPending => 'Invitation afventer';
+
+  @override
+  String get addressInviteTenant => 'Inviter lejer';
+
+  @override
+  String get addressCancelInvitation => 'Annuller';
+
+  @override
+  String get inviteLinkCreatedTitle => 'Invitation oprettet';
+
+  @override
+  String get cancelButton => 'Annuller';
+
+  @override
+  String get confirmButton => 'Bekræft';
+
+  @override
   String get myIssues => 'Mine meldinger';
 
   @override
@@ -271,4 +327,10 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get inviteCreateAnother => 'Opret ny invitation';
+
+  @override
+  String get themeToggleToLight => 'Lyst tema';
+
+  @override
+  String get themeToggleToDark => 'Mørkt tema';
 }

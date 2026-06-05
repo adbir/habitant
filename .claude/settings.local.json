@@ -10,7 +10,15 @@
       "Bash(Format-Table FullName)",
       "PowerShell(Get-ChildItem -Path \"E:\\\\arbejde\\\\flutterdev\\\\habitant\" -Recurse -Directory | Select-Object -First 30 | ForEach-Object { $_.FullName })",
       "Bash(dir /s \"E:\\\\arbejde\\\\flutterdev\\\\habitant\\\\lib\\\\features\" /b)",
-      "Bash(flutter test *)"
+      "Bash(flutter test *)",
+      "Bash(Select-String \"screen|view\" -SimpleMatch)",
+      "Bash(Get-Process -Name \"flutter*\",\"dart*\" -ErrorAction SilentlyContinue)",
+      "Bash(Stop-Process -Force)",
+      "Bash(pkill -f \"flutter run\")",
+      "Bash(pkill -f \"dart\")",
+      "Bash(node screenshots.js)",
+      "Bash(flutter run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8787/)"
     ]
   }
 }
