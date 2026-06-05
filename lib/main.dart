@@ -4,20 +4,30 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
 import 'app_router.dart';
+import 'core/services/api_client.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/supabase_api_client.dart';
+import 'core/services/supabase_auth_service.dart';
 import 'core/services/theme_mode_service.dart';
 import 'core/supabase_config.dart';
 import 'dev/fake_api_client.dart';
+import 'dev/fake_auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
-  final apiClient =
-      kDebugMode ? FakeApiClient() : SupabaseApiClient();
-  final authService = AuthService();
+  final AuthService authService;
+  final ApiClient apiClient;
+  if (kDebugMode) {
+    final fakeApi = FakeApiClient();
+    apiClient = fakeApi;
+    authService = FakeAuthService(fakeApi);
+  } else {
+    apiClient = SupabaseApiClient();
+    authService = SupabaseAuthService();
+  }
   final themeModeService = ThemeModeService();
   await authService.initialize();
 

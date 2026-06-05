@@ -115,6 +115,13 @@ class AppLocalizationsDa extends AppLocalizations {
       'Din konto er oprettet. Når din boligforening sender dig et invitationslink, kan du bruge det til at tilknytte din bolig.';
 
   @override
+  String get formerTenantBannerTitle => 'Du er fraflyttet';
+
+  @override
+  String get formerTenantBannerBody =>
+      'Din konto er ikke længere tilknyttet en bolig. Dine tidligere meldinger vises nedenfor.';
+
+  @override
   String get adminDashboardTitle => 'Overblik';
 
   @override
@@ -382,4 +389,39 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get themeToggleToDark => 'Mørkt tema';
+
+  @override
+  String get profileTitle => 'Profil';
+
+  @override
+  String get profileAccountSection => 'KONTO';
+
+  @override
+  String get profileAddressSection => 'DIN BOLIG';
+
+  @override
+  String get profileNoAddress => 'Ikke tilknyttet en bolig';
+
+  @override
+  String get profileClaimInvitation => 'Indløs invitation';
+
+  @override
+  String get claimInvitationTitle => 'Indtast invitation';
+
+  @override
+  String get claimInvitationFieldLabel => 'Invitationslink eller token';
+
+  @override
+  String get claimInvitationFieldHint => 'Sæt link eller token ind';
+
+  @override
+  String get claimInvitationContinue => 'Fortsæt';
+
+  @override
+  String get claimInvitationEmptyError =>
+      'Indtast venligst et invitationslink eller token';
+
+  @override
+  String get claimInvitationInvalidError =>
+      'Der blev ikke fundet et gyldigt token i det angivne link';
 }

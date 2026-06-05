@@ -115,6 +115,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.';
 
   @override
+  String get formerTenantBannerTitle => 'You\'ve moved out';
+
+  @override
+  String get formerTenantBannerBody =>
+      'You are no longer linked to an address. Your past issues are shown below.';
+
+  @override
   String get adminDashboardTitle => 'Overview';
 
   @override
@@ -381,4 +388,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get themeToggleToDark => 'Dark theme';
+
+  @override
+  String get profileTitle => 'Profile';
+
+  @override
+  String get profileAccountSection => 'ACCOUNT';
+
+  @override
+  String get profileAddressSection => 'YOUR ADDRESS';
+
+  @override
+  String get profileNoAddress => 'Not linked to an address';
+
+  @override
+  String get profileClaimInvitation => 'Claim invitation';
+
+  @override
+  String get claimInvitationTitle => 'Enter invitation';
+
+  @override
+  String get claimInvitationFieldLabel => 'Invitation link or token';
+
+  @override
+  String get claimInvitationFieldHint => 'Paste link or bare token';
+
+  @override
+  String get claimInvitationContinue => 'Continue';
+
+  @override
+  String get claimInvitationEmptyError =>
+      'Please enter an invitation link or token';
+
+  @override
+  String get claimInvitationInvalidError =>
+      'Could not find a valid token in the provided link';
 }

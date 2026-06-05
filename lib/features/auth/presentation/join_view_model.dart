@@ -65,6 +65,11 @@ class JoinViewModel extends ChangeNotifier {
   /// When true the preview step skips credentials and OTP — the invitation is
   /// claimed with a single tap.
   bool get isAlreadyAuthenticated {
+    if (_authService.isAuthenticated && _authService.tenantId != null) {
+      return true;
+    }
+    // Fallback: Supabase session present but role not yet resolved (join flow
+    // mid-flight in production after OTP verify).
     final user = _client.auth.currentUser;
     return user != null && user.emailConfirmedAt != null;
   }
@@ -107,11 +112,10 @@ class JoinViewModel extends ChangeNotifier {
   // ---- Step: preview --------------------------------------------------------
 
   Future<void> proceed() async {
-    final user = _client.auth.currentUser;
-    if (user != null && user.emailConfirmedAt != null) {
-      // Already authenticated with a confirmed email — skip credentials and
-      // claim the invitation directly.
-      _email = user.email ?? '';
+    if (isAlreadyAuthenticated) {
+      // Already authenticated — skip credentials and claim the invitation
+      // directly. Prefer the email from AuthService; fall back to Supabase.
+      _email = _client.auth.currentUser?.email ?? '';
       await _run(() => _claimInvitation());
       return;
     }
@@ -215,7 +219,8 @@ class JoinViewModel extends ChangeNotifier {
   Future<void> _claimInvitation() async {
     final inv = _invitation;
     if (inv == null) return;
-    final userId = _client.auth.currentUser!.id;
+    final userId = _authService.tenantId ?? _client.auth.currentUser?.id;
+    if (userId == null) return;
     await _apiClient.claimInvitation(
       userId: userId,
       email: _email,
