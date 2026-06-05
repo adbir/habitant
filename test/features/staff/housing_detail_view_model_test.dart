@@ -7,10 +7,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:beboer_app/core/models/address.dart';
 import 'package:beboer_app/core/models/housing.dart';
 import 'package:beboer_app/core/models/invitation.dart';
-<<<<<<< HEAD
-import 'package:beboer_app/core/models/issue.dart';
-=======
->>>>>>> administration-overview
 import 'package:beboer_app/core/services/api_client.dart';
 import 'package:beboer_app/core/services/auth_service.dart';
 import 'package:beboer_app/features/staff/presentation/housing_detail_view_model.dart';
@@ -59,23 +55,6 @@ Invitation _invitation({required String id, required String addressId}) =>
       expiresAt: DateTime(2030),
     );
 
-<<<<<<< HEAD
-Issue _issue(String id, IssueStatus status) => Issue(
-      id: id,
-      tenantId: 't1',
-      addressId: 'a1',
-      housingId: 'h1',
-      description: 'Test',
-      status: status,
-      needAssistance: false,
-      photoUrls: const [],
-      updates: const [],
-      comments: const [],
-      createdAt: DateTime(2024),
-    );
-
-=======
->>>>>>> administration-overview
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
@@ -94,11 +73,6 @@ void main() {
     auth = MockAuthService();
     when(() => api.getHousingInvitations(any()))
         .thenAnswer((_) async => const []);
-<<<<<<< HEAD
-    when(() => api.getHousingIssues(any()))
-        .thenAnswer((_) async => const []);
-=======
->>>>>>> administration-overview
   });
 
   HousingDetailViewModel makeVm() => HousingDetailViewModel(
@@ -112,52 +86,19 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('load()', () {
-<<<<<<< HEAD
-    test('success: invitations and open issues populated', () async {
-      final inv = _invitation(id: 'inv1', addressId: 'a2');
-      when(() => api.getHousingInvitations('h1'))
-          .thenAnswer((_) async => [inv]);
-      when(() => api.getHousingIssues('h1')).thenAnswer((_) async => [
-            _issue('i1', IssueStatus.pending),
-            _issue('i2', IssueStatus.completed), // excluded
-          ]);
-=======
     test('success: invitations populated', () async {
       final inv = _invitation(id: 'inv1', addressId: 'a2');
       when(() => api.getHousingInvitations('h1'))
           .thenAnswer((_) async => [inv]);
->>>>>>> administration-overview
 
       final vm = makeVm();
       await vm.load();
 
       check(vm.invitations).length.equals(1);
-<<<<<<< HEAD
-      check(vm.openIssues).length.equals(1);
-=======
->>>>>>> administration-overview
       check(vm.hasError).isFalse();
       check(vm.isLoading).isFalse();
     });
 
-<<<<<<< HEAD
-    test('open issues excludes completed and rejected', () async {
-      when(() => api.getHousingIssues('h1')).thenAnswer((_) async => [
-            _issue('i1', IssueStatus.pending),
-            _issue('i2', IssueStatus.assigned),
-            _issue('i3', IssueStatus.inProgress),
-            _issue('i4', IssueStatus.completed),
-            _issue('i5', IssueStatus.rejected),
-          ]);
-
-      final vm = makeVm();
-      await vm.load();
-
-      check(vm.openIssues).length.equals(3);
-    });
-
-=======
->>>>>>> administration-overview
     test('API error: hasError is true', () async {
       when(() => api.getHousingInvitations(any()))
           .thenThrow(Exception('network error'));

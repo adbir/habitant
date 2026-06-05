@@ -9,30 +9,6 @@ Status markers: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` deferred
 Current screen dumps everything into one list. Needs tabs + server-side
 filtering + pagination before it hits real data.
 
-<<<<<<< HEAD
-- [ ] **Add TabBar to HousingDetailScreen** — split existing list into two
-  tabs: "Units" (addresses + invitations) and "Issues" (open issues).
-  Existing `_AddressRow` and `_IssueTile` widgets move into tab bodies
-  unchanged. No VM or API changes.
-
-- [ ] **Server-side issue status filter** — add optional `IssueStatus? status`
-  param to `ApiClient.getHousingIssues()`. Update `FakeApiClient` to filter
-  by it. Update `HousingDetailViewModel.load()` to pass
-  `status: IssueStatus.open` (or equivalent set). Removes client-side filter.
-
-- [ ] **Paginate getHousingIssues** — extend the method signature with
-  `int page` and `int pageSize` (default 25). `FakeApiClient` slices the list.
-  New `HousingIssuesViewModel` tracks `_issues`, `_page`, `_hasMore`,
-  `_isLoadingMore`.
-
-- [ ] **Scroll-to-load-more on Issues tab** — `NotificationListener` on the
-  issues `ListView.builder` that triggers `loadMore()` when the user is within
-  ~200 px of the bottom. Show a small spinner at the list tail while loading.
-
-- [ ] **Widget tests for HousingIssuesViewModel** — load, load-more, error,
-  refresh, status filter. Follow existing VM test pattern in
-  `test/features/staff/`.
-=======
 - [x] **Add TabBar to HousingDetailScreen** — `DefaultTabController(length:2)`,
   city + `TabBar` in AppBar bottom, `TabBarView` with `_UnitsTab` and
   `_IssuesTab`. `_SectionHeader` removed.
@@ -52,7 +28,6 @@ filtering + pagination before it hits real data.
 
 - [x] **Widget tests for HousingIssuesViewModel** — 9 tests: load, load-more,
   error, loading-guard, refresh. All 89 project tests pass.
->>>>>>> administration-overview
 
 - [-] **Decouple Housing.addresses from list fetch** — `getHousings()` should
   return summary counts, not full address lists. Needs a `HousingSummary`

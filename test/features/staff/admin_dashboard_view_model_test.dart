@@ -5,10 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:beboer_app/core/models/address.dart';
 import 'package:beboer_app/core/models/housing.dart';
 import 'package:beboer_app/core/models/issue.dart';
-<<<<<<< HEAD
-=======
 import 'package:beboer_app/core/models/paged_result.dart';
->>>>>>> administration-overview
 import 'package:beboer_app/core/services/api_client.dart';
 import 'package:beboer_app/features/staff/presentation/admin_dashboard_view_model.dart';
 
@@ -84,13 +81,6 @@ void main() {
         _address(id: 'a3', housingId: 'h2'),
       ]);
       when(() => api.getStaffHousings(any())).thenAnswer((_) async => [h1, h2]);
-<<<<<<< HEAD
-      when(() => api.getHousingIssues('h1')).thenAnswer((_) async => [
-            _issue('i1', IssueStatus.pending),
-            _issue('i2', IssueStatus.completed), // excluded
-          ]);
-      when(() => api.getHousingIssues('h2')).thenAnswer((_) async => []);
-=======
       when(
         () => api.getHousingIssues(
           'h1',
@@ -117,7 +107,6 @@ void main() {
       ).thenAnswer(
         (_) async => const PagedResult(items: [], hasMore: false),
       );
->>>>>>> administration-overview
 
       final vm = makeVm();
       await vm.load();
@@ -175,9 +164,6 @@ void main() {
         _address(id: 'a3', housingId: 'h2'),
       ]);
       when(() => api.getStaffHousings(any())).thenAnswer((_) async => [h1, h2]);
-<<<<<<< HEAD
-      when(() => api.getHousingIssues(any())).thenAnswer((_) async => []);
-=======
       when(
         () => api.getHousingIssues(
           any(),
@@ -188,7 +174,6 @@ void main() {
       ).thenAnswer(
         (_) async => const PagedResult(items: [], hasMore: false),
       );
->>>>>>> administration-overview
 
       vm = makeVm();
       await vm.load();
@@ -215,15 +200,6 @@ void main() {
     test('all terminal statuses are excluded', () async {
       final h = _housing('h1', [_address(id: 'a1', housingId: 'h1')]);
       when(() => api.getStaffHousings(any())).thenAnswer((_) async => [h]);
-<<<<<<< HEAD
-      when(() => api.getHousingIssues('h1')).thenAnswer((_) async => [
-            _issue('i1', IssueStatus.pending),
-            _issue('i2', IssueStatus.assigned),
-            _issue('i3', IssueStatus.inProgress),
-            _issue('i4', IssueStatus.completed),   // excluded
-            _issue('i5', IssueStatus.rejected),    // excluded
-          ]);
-=======
       when(
         () => api.getHousingIssues(
           'h1',
@@ -243,7 +219,6 @@ void main() {
           hasMore: false,
         ),
       );
->>>>>>> administration-overview
 
       final vm = makeVm();
       await vm.load();

@@ -11,10 +11,7 @@ import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/adaptive_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import 'housing_detail_view_model.dart';
-<<<<<<< HEAD
-=======
 import 'housing_issues_view_model.dart';
->>>>>>> administration-overview
 
 class HousingDetailScreen extends StatefulWidget {
   final Housing initialHousing;
@@ -34,10 +31,7 @@ class HousingDetailScreen extends StatefulWidget {
 
 class _HousingDetailScreenState extends State<HousingDetailScreen> {
   late final HousingDetailViewModel _viewModel;
-<<<<<<< HEAD
-=======
   late final HousingIssuesViewModel _issuesViewModel;
->>>>>>> administration-overview
 
   @override
   void initState() {
@@ -47,10 +41,6 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
       authService: widget.authService,
       initialHousing: widget.initialHousing,
     );
-<<<<<<< HEAD
-    _viewModel.addListener(_onViewModelChanged);
-    _viewModel.load();
-=======
     _issuesViewModel = HousingIssuesViewModel(
       apiClient: widget.apiClient,
       housingId: widget.initialHousing.id,
@@ -58,17 +48,13 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
     _viewModel.addListener(_onViewModelChanged);
     _viewModel.load();
     _issuesViewModel.load();
->>>>>>> administration-overview
   }
 
   @override
   void dispose() {
     _viewModel.removeListener(_onViewModelChanged);
     _viewModel.dispose();
-<<<<<<< HEAD
-=======
     _issuesViewModel.dispose();
->>>>>>> administration-overview
     super.dispose();
   }
 
@@ -134,31 +120,6 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-<<<<<<< HEAD
-    return ListenableBuilder(
-      listenable: _viewModel,
-      builder: (context, _) => Scaffold(
-        appBar: AppBar(
-          title: Text(_viewModel.housing.name),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(20),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 0, 6),
-                child: Text(
-                  _viewModel.housing.city,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        body: AdaptiveLayout(
-          child: _buildBody(context, l10n),
-=======
     return DefaultTabController(
       length: 2,
       child: ListenableBuilder(
@@ -196,7 +157,6 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
           body: AdaptiveLayout(
             child: _buildBody(context, l10n),
           ),
->>>>>>> administration-overview
         ),
       ),
     );
@@ -233,57 +193,6 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
         return rank(a).compareTo(rank(b));
       });
 
-<<<<<<< HEAD
-    return RefreshIndicator(
-      onRefresh: _viewModel.refresh,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-        children: [
-          _SectionHeader(title: l10n.housingAddressesSection),
-          const SizedBox(height: 8),
-          ...sorted.map(
-            (a) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _AddressRow(
-                address: a,
-                status: _viewModel.statusFor(a),
-                invitation: _viewModel.invitations
-                    .where((inv) => inv.addressId == a.id)
-                    .firstOrNull,
-                isCancelling: _viewModel.invitations
-                    .where((inv) => inv.addressId == a.id)
-                    .any((inv) => _viewModel.isCancelling(inv.id)),
-                isCreating: _viewModel.isCreating(a.id),
-                onInvite: () => _viewModel.createInvitation(a.id),
-                onCancel: (invId) => _viewModel.cancelInvitation(invId),
-              ),
-            ),
-          ),
-          if (_viewModel.openIssues.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            _SectionHeader(title: l10n.housingOpenIssuesSection),
-            const SizedBox(height: 8),
-            ..._viewModel.openIssues.map(
-              (issue) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _IssueTile(
-                  issue: issue,
-                  onTap: () =>
-                      context.push('/staff/issues/${issue.id}', extra: issue),
-                ),
-              ),
-            ),
-          ] else ...[
-            const SizedBox(height: 16),
-            Text(
-              l10n.housingNoOpenIssues,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ],
-        ],
-=======
     return TabBarView(
       children: [
         _UnitsTab(
@@ -335,29 +244,11 @@ class _UnitsTab extends StatelessWidget {
             ),
           );
         },
->>>>>>> administration-overview
       ),
     );
   }
 }
 
-<<<<<<< HEAD
-// ---- Section header ---------------------------------------------------------
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-            letterSpacing: 0.8,
-          ),
-=======
 // ---- Issues tab -------------------------------------------------------------
 
 class _IssuesTab extends StatelessWidget {
@@ -417,15 +308,13 @@ class _IssuesTab extends StatelessWidget {
         }
 
         // Extra slot at the end for the load-more spinner.
-        final itemCount =
-            issues.length + (viewModel.hasMore ? 1 : 0);
+        final itemCount = issues.length + (viewModel.hasMore ? 1 : 0);
 
         return RefreshIndicator(
           onRefresh: viewModel.refresh,
           child: NotificationListener<ScrollNotification>(
             onNotification: (n) {
-              if (n is ScrollEndNotification &&
-                  n.metrics.extentAfter < 200) {
+              if (n is ScrollEndNotification && n.metrics.extentAfter < 200) {
                 viewModel.loadMore();
               }
               return false;
@@ -441,9 +330,7 @@ class _IssuesTab extends StatelessWidget {
                       child: SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     ),
                   );
@@ -461,7 +348,6 @@ class _IssuesTab extends StatelessWidget {
           ),
         );
       },
->>>>>>> administration-overview
     );
   }
 }
@@ -619,12 +505,8 @@ class _AddressAction extends StatelessWidget {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : TextButton(
-<<<<<<< HEAD
-              onPressed: invitation != null ? () => onCancel(invitation!.id) : null,
-=======
               onPressed:
                   invitation != null ? () => onCancel(invitation!.id) : null,
->>>>>>> administration-overview
               style: TextButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -694,12 +576,7 @@ class _IssueTile extends StatelessWidget {
               ),
               child: Text(
                 label,
-<<<<<<< HEAD
-                style:
-                    text.labelSmall?.copyWith(color: chipFg),
-=======
                 style: text.labelSmall?.copyWith(color: chipFg),
->>>>>>> administration-overview
               ),
             ),
             const SizedBox(width: 10),
