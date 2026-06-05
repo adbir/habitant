@@ -349,6 +349,11 @@ class ApiClient {
     throw UnimplementedError();
   }
 
+  /// Returns active (non-expired, non-cancelled) invitations for [housingId].
+  Future<List<Invitation>> getHousingInvitations(String housingId) async {
+    throw UnimplementedError();
+  }
+
   /// Admin endpoints
   Future<Issue> markNeedsAssistance(String issueId) async {
     return _patch(

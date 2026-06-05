@@ -259,6 +259,19 @@ class SupabaseApiClient extends ApiClient {
     }).eq('invitation_id', invitationId);
   }
 
+  @override
+  Future<List<Invitation>> getHousingInvitations(String housingId) async {
+    // RLS policy invitation_select_active already filters expired/cancelled rows.
+    // The !inner join restricts results to invitations whose address belongs to
+    // the given housing.
+    final rows = await _client
+        .from('tenant_invitation')
+        .select('*, address!inner(*, housing:housing_id(name))')
+        .eq('address.housing_id', housingId)
+        .order('created', ascending: false);
+    return rows.map(Invitation.fromRow).toList();
+  }
+
   // ---- Admin -----------------------------------------------------------------
 
   @override

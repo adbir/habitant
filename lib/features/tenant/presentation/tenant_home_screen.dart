@@ -9,6 +9,7 @@ import '../../../core/widgets/adaptive_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import 'tenant_home_view_model.dart';
 
+
 class TenantHomeScreen extends StatefulWidget {
   final ApiClient apiClient;
   final AuthService authService;
@@ -47,18 +48,22 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
     final l10n = AppLocalizations.of(context)!;
     return ListenableBuilder(
       listenable: _viewModel,
-      builder: (context, _) => Scaffold(
-        appBar: _buildAppBar(context, l10n),
-        body: AdaptiveLayout(child: _buildBody(context, l10n)),
-        floatingActionButton: _viewModel.isLoading ||
-                _viewModel.hasError ||
-                _viewModel.address == null
-            ? null
-            : FloatingActionButton(
+      builder: (context, _) => Stack(
+        children: [
+          AdaptiveLayout(child: _buildBody(context, l10n)),
+          if (!_viewModel.isLoading &&
+              !_viewModel.hasError &&
+              _viewModel.address != null)
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: FloatingActionButton(
                 onPressed: () => _openReportIssue(context),
                 tooltip: l10n.reportIssueTooltip,
                 child: const Icon(Icons.add),
               ),
+            ),
+        ],
       ),
     );
   }
@@ -71,40 +76,6 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
       extra: {'addressId': address.id},
     );
     _viewModel.refresh();
-  }
-
-  AppBar _buildAppBar(BuildContext context, AppLocalizations l10n) {
-    final address = _viewModel.address;
-    return AppBar(
-      title: address == null
-          ? Text(l10n.myIssues)
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  address.shortDisplayAddress,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-                Text(
-                  _viewModel.housing?.name ?? '',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurfaceVariant,
-                      ),
-                ),
-              ],
-            ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.logout),
-          tooltip: 'Log ud',
-          onPressed: widget.authService.logout,
-        ),
-      ],
-    );
   }
 
   Widget _buildBody(BuildContext context, AppLocalizations l10n) {
