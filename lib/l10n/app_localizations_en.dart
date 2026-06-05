@@ -326,4 +326,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteCreateAnother => 'Create another invitation';
+
+  @override
+  String get themeToggleToLight => 'Light theme';
+
+  @override
+  String get themeToggleToDark => 'Dark theme';
 }

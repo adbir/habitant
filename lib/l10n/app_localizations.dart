@@ -709,6 +709,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create another invitation'**
   String get inviteCreateAnother;
+
+  /// No description provided for @themeToggleToLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light theme'**
+  String get themeToggleToLight;
+
+  /// No description provided for @themeToggleToDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark theme'**
+  String get themeToggleToDark;
 }
 
 class _AppLocalizationsDelegate

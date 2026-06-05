@@ -327,4 +327,10 @@ class AppLocalizationsDa extends AppLocalizations {
 
   @override
   String get inviteCreateAnother => 'Opret ny invitation';
+
+  @override
+  String get themeToggleToLight => 'Lyst tema';
+
+  @override
+  String get themeToggleToDark => 'Mørkt tema';
 }

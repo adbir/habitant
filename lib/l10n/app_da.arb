@@ -133,5 +133,8 @@
   "inviteCreatedSubtitle": "Del dette link med lejeren:",
   "inviteCopyLink": "Kopiér link",
   "inviteLinkCopied": "Link kopieret",
-  "inviteCreateAnother": "Opret ny invitation"
+  "inviteCreateAnother": "Opret ny invitation",
+
+  "themeToggleToLight": "Lyst tema",
+  "themeToggleToDark": "Mørkt tema"
 }

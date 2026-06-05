@@ -133,5 +133,8 @@
   "inviteCreatedSubtitle": "Share this link with the tenant:",
   "inviteCopyLink": "Copy link",
   "inviteLinkCopied": "Link copied",
-  "inviteCreateAnother": "Create another invitation"
+  "inviteCreateAnother": "Create another invitation",
+
+  "themeToggleToLight": "Light theme",
+  "themeToggleToDark": "Dark theme"
 }

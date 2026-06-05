@@ -1,11 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/models/housing.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
-import '../../../core/services/theme_mode_service.dart';
 import '../../../core/widgets/adaptive_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import 'admin_dashboard_view_model.dart';
@@ -13,13 +11,11 @@ import 'admin_dashboard_view_model.dart';
 class AdminDashboardScreen extends StatefulWidget {
   final ApiClient apiClient;
   final AuthService authService;
-  final ThemeModeService themeModeService;
 
   const AdminDashboardScreen({
     super.key,
     required this.apiClient,
     required this.authService,
-    required this.themeModeService,
   });
 
   @override
@@ -50,36 +46,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final l10n = AppLocalizations.of(context)!;
     return ListenableBuilder(
       listenable: _viewModel,
-      builder: (context, _) => Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.adminDashboardTitle),
-          actions: [
-            if (kDebugMode)
-              ListenableBuilder(
-                listenable: widget.themeModeService,
-                builder: (context, _) => Switch(
-                  value: widget.themeModeService.isDark,
-                  onChanged: (_) => widget.themeModeService.toggle(),
-                  thumbIcon: WidgetStateProperty.resolveWith((states) {
-                    return Icon(
-                      widget.themeModeService.isDark
-                          ? Icons.dark_mode
-                          : Icons.light_mode,
-                      size: 16,
-                    );
-                  }),
-                ),
-              ),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: 'Log ud',
-              onPressed: widget.authService.logout,
-            ),
-          ],
-        ),
-        body: AdaptiveLayout(
-          child: _buildBody(context, l10n),
-        ),
+      builder: (context, _) => AdaptiveLayout(
+        child: _buildBody(context, l10n),
       ),
     );
   }
