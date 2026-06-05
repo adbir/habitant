@@ -9,6 +9,7 @@ import '../core/models/invitation.dart';
 import '../core/models/issue.dart';
 import '../core/models/issue_comment.dart';
 import '../core/models/maintenance_update.dart';
+import '../core/models/paged_result.dart';
 import '../core/models/tenant_profile.dart';
 import '../core/models/user_role.dart';
 import '../core/services/api_client.dart';
@@ -230,9 +231,24 @@ class FakeApiClient extends ApiClient {
   }
 
   @override
-  Future<List<Issue>> getHousingIssues(String housingId) async {
+  Future<PagedResult<Issue>> getHousingIssues(
+    String housingId, {
+    Set<IssueStatus>? statuses,
+    int page = 0,
+    int pageSize = 25,
+  }) async {
     await _wait();
-    return _issues.where((i) => i.housingId == housingId).toList();
+    final filtered = _issues
+        .where((i) => i.housingId == housingId)
+        .where(
+          (i) => statuses == null || statuses.contains(i.status),
+        )
+        .toList();
+    final start = page * pageSize;
+    final end = (start + pageSize).clamp(0, filtered.length);
+    final items =
+        start >= filtered.length ? <Issue>[] : filtered.sublist(start, end);
+    return PagedResult(items: items, hasMore: end < filtered.length);
   }
 
   // ---- Maintenance ---------------------------------------------------------

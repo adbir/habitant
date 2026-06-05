@@ -106,7 +106,7 @@ class MaintenanceDashboardViewModel extends ChangeNotifier {
       );
       _issues
         ..clear()
-        ..addAll(issueResults.expand((list) => list))
+        ..addAll(issueResults.expand((result) => result.items))
         ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     } on ApiException catch (_) {
       _hasError = true;

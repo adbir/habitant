@@ -8,6 +8,7 @@ import '../models/invitation.dart';
 import '../models/issue.dart';
 import '../models/issue_comment.dart';
 import '../models/maintenance_update.dart';
+import '../models/paged_result.dart';
 import '../models/tenant_profile.dart';
 import 'api_client.dart';
 
@@ -162,13 +163,33 @@ class SupabaseApiClient extends ApiClient {
   }
 
   @override
-  Future<List<Issue>> getHousingIssues(String housingId) async {
-    final rows = await _client
+  Future<PagedResult<Issue>> getHousingIssues(
+    String housingId, {
+    Set<IssueStatus>? statuses,
+    int page = 0,
+    int pageSize = 25,
+  }) async {
+    var query = _client
         .from('issue')
         .select(_issueSelect)
-        .eq('address.housing_id', housingId)
-        .order('created', ascending: false);
-    return rows.map(_issueFromRow).toList();
+        .eq('address.housing_id', housingId);
+
+    if (statuses != null) {
+      query = query.inFilter(
+        'status',
+        statuses.map((s) => s.name).toList(),
+      );
+    }
+
+    final rows = await query
+        .order('created', ascending: false)
+        .range(page * pageSize, page * pageSize + pageSize);
+
+    final items = rows.map(_issueFromRow).toList();
+    return PagedResult(
+      items: items,
+      hasMore: items.length == pageSize,
+    );
   }
 
   @override

@@ -11,6 +11,10 @@ import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/adaptive_layout.dart';
 import '../../../l10n/app_localizations.dart';
 import 'housing_detail_view_model.dart';
+<<<<<<< HEAD
+=======
+import 'housing_issues_view_model.dart';
+>>>>>>> administration-overview
 
 class HousingDetailScreen extends StatefulWidget {
   final Housing initialHousing;
@@ -30,6 +34,10 @@ class HousingDetailScreen extends StatefulWidget {
 
 class _HousingDetailScreenState extends State<HousingDetailScreen> {
   late final HousingDetailViewModel _viewModel;
+<<<<<<< HEAD
+=======
+  late final HousingIssuesViewModel _issuesViewModel;
+>>>>>>> administration-overview
 
   @override
   void initState() {
@@ -39,14 +47,28 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
       authService: widget.authService,
       initialHousing: widget.initialHousing,
     );
+<<<<<<< HEAD
     _viewModel.addListener(_onViewModelChanged);
     _viewModel.load();
+=======
+    _issuesViewModel = HousingIssuesViewModel(
+      apiClient: widget.apiClient,
+      housingId: widget.initialHousing.id,
+    );
+    _viewModel.addListener(_onViewModelChanged);
+    _viewModel.load();
+    _issuesViewModel.load();
+>>>>>>> administration-overview
   }
 
   @override
   void dispose() {
     _viewModel.removeListener(_onViewModelChanged);
     _viewModel.dispose();
+<<<<<<< HEAD
+=======
+    _issuesViewModel.dispose();
+>>>>>>> administration-overview
     super.dispose();
   }
 
@@ -112,6 +134,7 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+<<<<<<< HEAD
     return ListenableBuilder(
       listenable: _viewModel,
       builder: (context, _) => Scaffold(
@@ -135,6 +158,45 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
         ),
         body: AdaptiveLayout(
           child: _buildBody(context, l10n),
+=======
+    return DefaultTabController(
+      length: 2,
+      child: ListenableBuilder(
+        listenable: _viewModel,
+        builder: (context, _) => Scaffold(
+          appBar: AppBar(
+            title: Text(_viewModel.housing.name),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(68),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 0, 4),
+                    child: Text(
+                      _viewModel.housing.city,
+                      style:
+                          Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                    ),
+                  ),
+                  TabBar(
+                    tabs: [
+                      Tab(text: l10n.housingAddressesSection),
+                      Tab(text: l10n.housingOpenIssuesSection),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          body: AdaptiveLayout(
+            child: _buildBody(context, l10n),
+          ),
+>>>>>>> administration-overview
         ),
       ),
     );
@@ -171,6 +233,7 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
         return rank(a).compareTo(rank(b));
       });
 
+<<<<<<< HEAD
     return RefreshIndicator(
       onRefresh: _viewModel.refresh,
       child: ListView(
@@ -220,11 +283,65 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
             ),
           ],
         ],
+=======
+    return TabBarView(
+      children: [
+        _UnitsTab(
+          sorted: sorted,
+          viewModel: _viewModel,
+        ),
+        _IssuesTab(
+          viewModel: _issuesViewModel,
+          l10n: l10n,
+          onIssueTap: (issue) =>
+              context.push('/staff/issues/${issue.id}', extra: issue),
+        ),
+      ],
+    );
+  }
+}
+
+// ---- Units tab --------------------------------------------------------------
+
+class _UnitsTab extends StatelessWidget {
+  final List<Address> sorted;
+  final HousingDetailViewModel viewModel;
+
+  const _UnitsTab({required this.sorted, required this.viewModel});
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: viewModel.refresh,
+      child: ListView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+        itemCount: sorted.length,
+        itemBuilder: (context, index) {
+          final a = sorted[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _AddressRow(
+              address: a,
+              status: viewModel.statusFor(a),
+              invitation: viewModel.invitations
+                  .where((inv) => inv.addressId == a.id)
+                  .firstOrNull,
+              isCancelling: viewModel.invitations
+                  .where((inv) => inv.addressId == a.id)
+                  .any((inv) => viewModel.isCancelling(inv.id)),
+              isCreating: viewModel.isCreating(a.id),
+              onInvite: () => viewModel.createInvitation(a.id),
+              onCancel: (invId) => viewModel.cancelInvitation(invId),
+            ),
+          );
+        },
+>>>>>>> administration-overview
       ),
     );
   }
 }
 
+<<<<<<< HEAD
 // ---- Section header ---------------------------------------------------------
 
 class _SectionHeader extends StatelessWidget {
@@ -240,6 +357,111 @@ class _SectionHeader extends StatelessWidget {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             letterSpacing: 0.8,
           ),
+=======
+// ---- Issues tab -------------------------------------------------------------
+
+class _IssuesTab extends StatelessWidget {
+  final HousingIssuesViewModel viewModel;
+  final AppLocalizations l10n;
+  final ValueChanged<Issue> onIssueTap;
+
+  const _IssuesTab({
+    required this.viewModel,
+    required this.l10n,
+    required this.onIssueTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, _) {
+        if (viewModel.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (viewModel.hasError) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.errorLoadFailed),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: viewModel.refresh,
+                  child: Text(l10n.errorRetry),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final issues = viewModel.issues;
+
+        if (issues.isEmpty) {
+          return RefreshIndicator(
+            onRefresh: viewModel.refresh,
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              children: [
+                Text(
+                  l10n.housingNoOpenIssues,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurfaceVariant,
+                      ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Extra slot at the end for the load-more spinner.
+        final itemCount =
+            issues.length + (viewModel.hasMore ? 1 : 0);
+
+        return RefreshIndicator(
+          onRefresh: viewModel.refresh,
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (n) {
+              if (n is ScrollEndNotification &&
+                  n.metrics.extentAfter < 200) {
+                viewModel.loadMore();
+              }
+              return false;
+            },
+            child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                if (index == issues.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                final issue = issues[index];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _IssueTile(
+                    issue: issue,
+                    onTap: () => onIssueTap(issue),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+>>>>>>> administration-overview
     );
   }
 }
@@ -397,7 +619,12 @@ class _AddressAction extends StatelessWidget {
               child: CircularProgressIndicator(strokeWidth: 2),
             )
           : TextButton(
+<<<<<<< HEAD
               onPressed: invitation != null ? () => onCancel(invitation!.id) : null,
+=======
+              onPressed:
+                  invitation != null ? () => onCancel(invitation!.id) : null,
+>>>>>>> administration-overview
               style: TextButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -467,8 +694,12 @@ class _IssueTile extends StatelessWidget {
               ),
               child: Text(
                 label,
+<<<<<<< HEAD
                 style:
                     text.labelSmall?.copyWith(color: chipFg),
+=======
+                style: text.labelSmall?.copyWith(color: chipFg),
+>>>>>>> administration-overview
               ),
             ),
             const SizedBox(width: 10),

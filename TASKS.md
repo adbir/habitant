@@ -9,6 +9,7 @@ Status markers: `[ ]` todo · `[~]` in progress · `[x]` done · `[-]` deferred
 Current screen dumps everything into one list. Needs tabs + server-side
 filtering + pagination before it hits real data.
 
+<<<<<<< HEAD
 - [ ] **Add TabBar to HousingDetailScreen** — split existing list into two
   tabs: "Units" (addresses + invitations) and "Issues" (open issues).
   Existing `_AddressRow` and `_IssueTile` widgets move into tab bodies
@@ -31,6 +32,27 @@ filtering + pagination before it hits real data.
 - [ ] **Widget tests for HousingIssuesViewModel** — load, load-more, error,
   refresh, status filter. Follow existing VM test pattern in
   `test/features/staff/`.
+=======
+- [x] **Add TabBar to HousingDetailScreen** — `DefaultTabController(length:2)`,
+  city + `TabBar` in AppBar bottom, `TabBarView` with `_UnitsTab` and
+  `_IssuesTab`. `_SectionHeader` removed.
+
+- [x] **Server-side issue status filter + pagination** — `getHousingIssues`
+  now takes `{Set<IssueStatus>? statuses, int page, int pageSize}` and returns
+  `PagedResult<Issue>`. `FakeApiClient` filters and slices. `PagedResult<T>`
+  model added at `lib/core/models/paged_result.dart`.
+
+- [x] **HousingIssuesViewModel** — `load()`, `loadMore()`, `refresh()`,
+  concurrent-guard on `loadMore()`. Issues tab wired to this VM;
+  `HousingDetailViewModel` now only manages invitations.
+
+- [x] **Scroll-to-load-more on Issues tab** — `NotificationListener` fires
+  `loadMore()` within 200 px of bottom; spinner appended as last list item
+  while `hasMore` is true.
+
+- [x] **Widget tests for HousingIssuesViewModel** — 9 tests: load, load-more,
+  error, loading-guard, refresh. All 89 project tests pass.
+>>>>>>> administration-overview
 
 - [-] **Decouple Housing.addresses from list fetch** — `getHousings()` should
   return summary counts, not full address lists. Needs a `HousingSummary`
