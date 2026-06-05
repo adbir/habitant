@@ -196,17 +196,43 @@ void main() {
       check(vm.step).equals(JoinStep.credentials);
     });
 
-    // The authenticated + confirmed path calls _claimInvitation(), which does
-    // `_client.from('tenant').upsert({...})`. Mocking the full Supabase query
-    // builder chain inline is impractical — this path needs an integration test
-    // against a real (test) Supabase project, or a TenantRepository abstraction
-    // wrapping the DB write (see Step 7 of the test plan).
     test(
-      'authenticated user with confirmed email: '
-      'claims invitation directly (integration test — skipped)',
-      () {},
-      skip: 'Requires Supabase query-builder mock or integration test setup. '
-          'See test plan Step 7.',
+      'authenticated user with confirmed email: claims invitation directly',
+      () async {
+        final confirmedUser = User.fromJson({
+          'id': 'user-1',
+          'app_metadata': <String, dynamic>{},
+          'user_metadata': <String, dynamic>{},
+          'aud': 'authenticated',
+          'email': 'tenant@example.com',
+          'email_confirmed_at': '2024-01-01T00:00:00Z',
+          'created_at': '2024-01-01T00:00:00Z',
+        });
+        when(() => api.getInvitationByToken(any()))
+            .thenAnswer((_) async => testInvitation);
+        when(() => goTrue.currentUser).thenReturn(confirmedUser);
+        when(() => api.claimInvitation(
+              userId: any(named: 'userId'),
+              email: any(named: 'email'),
+              housingId: any(named: 'housingId'),
+              addressId: any(named: 'addressId'),
+              phoneNumber: any(named: 'phoneNumber'),
+            )).thenAnswer((_) async {});
+
+        final vm = makeVm(api: api, auth: auth, supabase: supabase);
+        await vm.loadInvitation('test-token-uuid');
+        await vm.proceed();
+
+        check(vm.step).equals(JoinStep.complete);
+        verify(() => auth.joinComplete()).called(1);
+        verify(() => api.claimInvitation(
+              userId: 'user-1',
+              email: 'tenant@example.com',
+              housingId: testInvitation.address!.housingId,
+              addressId: testInvitation.addressId,
+              phoneNumber: null,
+            )).called(1);
+      },
     );
   });
 

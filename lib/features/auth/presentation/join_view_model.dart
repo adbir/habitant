@@ -216,14 +216,13 @@ class JoinViewModel extends ChangeNotifier {
     final inv = _invitation;
     if (inv == null) return;
     final userId = _client.auth.currentUser!.id;
-    await _client.from('tenant').upsert({
-      'tenant_id': userId,
-      'email': _email,
-      if (_phoneNumber != null) 'phone_number': _phoneNumber,
-      'current_housing_id': inv.address!.housingId,
-      'current_address_id': inv.addressId,
-      'tenant_flags': 1,
-    });
+    await _apiClient.claimInvitation(
+      userId: userId,
+      email: _email,
+      housingId: inv.address!.housingId,
+      addressId: inv.addressId,
+      phoneNumber: _phoneNumber,
+    );
     await _authService.joinComplete();
     _step = JoinStep.complete;
     // JoinScreen listens for complete and calls context.go('/tenant').
