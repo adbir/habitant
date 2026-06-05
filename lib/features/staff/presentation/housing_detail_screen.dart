@@ -9,6 +9,7 @@ import '../../../core/models/issue.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/adaptive_layout.dart';
+import '../../../core/widgets/adaptive_sheet.dart';
 import '../../../l10n/app_localizations.dart';
 import 'housing_detail_view_model.dart';
 import 'housing_issues_view_model.dart';
@@ -68,9 +69,8 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
   void _showInvitationSheet(Invitation inv) {
     final l10n = AppLocalizations.of(context)!;
     final link = _viewModel.invitationLink(inv);
-    showModalBottomSheet<void>(
+    showAdaptiveSheet<void>(
       context: context,
-      showDragHandle: true,
       builder: (ctx) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
