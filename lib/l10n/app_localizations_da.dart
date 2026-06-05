@@ -162,6 +162,55 @@ class AppLocalizationsDa extends AppLocalizations {
   String get addressCancelInvitation => 'Annuller';
 
   @override
+  String get addressCancelInvitationFull => 'Annuller invitation';
+
+  @override
+  String get addressTenantsSection => 'Registrerede lejere';
+
+  @override
+  String get addressNoTenants => 'Ingen registrerede lejere';
+
+  @override
+  String get addressInviteExpires => 'Udløber';
+
+  @override
+  String get addressVacantHint => 'Ingen aktiv lejer';
+
+  @override
+  String get addressDetailHistorySection => 'Lejemålshistorik';
+
+  @override
+  String get addressDetailMovedIn => 'Indflyttet';
+
+  @override
+  String get addressDetailMovedOut => 'Fraflyttet';
+
+  @override
+  String get addressDetailCurrentTenant => 'Aktuel';
+
+  @override
+  String get addressDetailNoHistory => 'Ingen registrerede tidligere lejere';
+
+  @override
+  String get addressDetailPreviewTooltip => 'Hurtigt overblik';
+
+  @override
+  String addressDetailIssueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sager',
+      one: '$count sag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String issueHandledBy(String name) {
+    return 'Behandlet af $name';
+  }
+
+  @override
   String get inviteLinkCreatedTitle => 'Invitation oprettet';
 
   @override

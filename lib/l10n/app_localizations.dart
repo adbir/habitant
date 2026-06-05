@@ -392,6 +392,84 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get addressCancelInvitation;
 
+  /// No description provided for @addressCancelInvitationFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel invitation'**
+  String get addressCancelInvitationFull;
+
+  /// No description provided for @addressTenantsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Registered tenants'**
+  String get addressTenantsSection;
+
+  /// No description provided for @addressNoTenants.
+  ///
+  /// In en, this message translates to:
+  /// **'No registered tenants'**
+  String get addressNoTenants;
+
+  /// No description provided for @addressInviteExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires'**
+  String get addressInviteExpires;
+
+  /// No description provided for @addressVacantHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No active tenant'**
+  String get addressVacantHint;
+
+  /// No description provided for @addressDetailHistorySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenancy history'**
+  String get addressDetailHistorySection;
+
+  /// No description provided for @addressDetailMovedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved in'**
+  String get addressDetailMovedIn;
+
+  /// No description provided for @addressDetailMovedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved out'**
+  String get addressDetailMovedOut;
+
+  /// No description provided for @addressDetailCurrentTenant.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get addressDetailCurrentTenant;
+
+  /// No description provided for @addressDetailNoHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous tenants on record'**
+  String get addressDetailNoHistory;
+
+  /// No description provided for @addressDetailPreviewTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick view'**
+  String get addressDetailPreviewTooltip;
+
+  /// No description provided for @addressDetailIssueCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} issue} other{{count} issues}}'**
+  String addressDetailIssueCount(int count);
+
+  /// No description provided for @issueHandledBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Handled by {name}'**
+  String issueHandledBy(String name);
+
   /// No description provided for @inviteLinkCreatedTitle.
   ///
   /// In en, this message translates to:

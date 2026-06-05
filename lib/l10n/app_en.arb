@@ -69,6 +69,29 @@
   "addressStatusInvitationPending": "Invitation pending",
   "addressInviteTenant": "Invite tenant",
   "addressCancelInvitation": "Cancel",
+  "addressCancelInvitationFull": "Cancel invitation",
+  "addressTenantsSection": "Registered tenants",
+  "addressNoTenants": "No registered tenants",
+  "addressInviteExpires": "Expires",
+  "addressVacantHint": "No active tenant",
+  "addressDetailHistorySection": "Tenancy history",
+  "addressDetailMovedIn": "Moved in",
+  "addressDetailMovedOut": "Moved out",
+  "addressDetailCurrentTenant": "Current",
+  "addressDetailNoHistory": "No previous tenants on record",
+  "addressDetailPreviewTooltip": "Quick view",
+  "addressDetailIssueCount": "{count, plural, one{{count} issue} other{{count} issues}}",
+  "@addressDetailIssueCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "issueHandledBy": "Handled by {name}",
+  "@issueHandledBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
   "inviteLinkCreatedTitle": "Invitation created",
   "cancelButton": "Cancel",
   "confirmButton": "Confirm",

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'core/models/address.dart';
 import 'core/models/housing.dart';
 import 'core/models/issue.dart';
 import 'core/models/user_role.dart';
@@ -10,8 +11,10 @@ import 'core/services/theme_mode_service.dart';
 import 'core/widgets/app_shell.dart';
 import 'features/auth/presentation/admin_invite_screen.dart';
 import 'features/auth/presentation/join_screen.dart';
+import 'features/staff/presentation/address_detail_screen.dart';
 import 'features/staff/presentation/admin_dashboard_screen.dart';
 import 'features/staff/presentation/housing_detail_screen.dart';
+import 'features/staff/presentation/tenancy_issues_screen.dart';
 import 'features/auth/presentation/login_screen.dart';
 import 'features/auth/presentation/signup_screen.dart';
 import 'features/maintenance/presentation/issue_detail_screen.dart';
@@ -271,6 +274,20 @@ class AppRouter {
             initialHousing: state.extra as Housing,
             apiClient: _apiClient,
             authService: _authService,
+          ),
+        ),
+        GoRoute(
+          path: '/admin/housing/:housingId/address/:addressId',
+          builder: (context, state) => AddressDetailScreen(
+            initialAddress: state.extra as Address,
+            apiClient: _apiClient,
+          ),
+        ),
+        GoRoute(
+          path: '/admin/housing/:housingId/address/:addressId/tenancy-issues',
+          builder: (context, state) => TenancyIssuesScreen(
+            args: state.extra as TenancyIssuesArgs,
+            apiClient: _apiClient,
           ),
         ),
       ],
