@@ -42,7 +42,7 @@ class FakeAuthService extends AuthService {
     // No session persistence for normal fake logins.
     // If the user previously completed the join flow (Supabase OTP path),
     // restore that session so the app doesn't boot to /login.
-    final supabaseUser = Supabase.instance.client.auth.currentUser;
+    final supabaseUser = _supabaseCurrentUser;
     if (supabaseUser != null) {
       _userId = supabaseUser.id;
       await _resolveRoleFromApi();
@@ -79,7 +79,7 @@ class FakeAuthService extends AuthService {
 
   @override
   Future<void> signupComplete() async {
-    _userId ??= Supabase.instance.client.auth.currentUser?.id;
+    _userId ??= _supabaseCurrentUser?.id;
     await _resolveRoleFromApi();
     notifyListeners();
   }
@@ -87,7 +87,7 @@ class FakeAuthService extends AuthService {
   @override
   Future<void> joinComplete() async {
     _joinInProgress = false;
-    _userId ??= Supabase.instance.client.auth.currentUser?.id;
+    _userId ??= _supabaseCurrentUser?.id;
     await _resolveRoleFromApi();
     notifyListeners();
   }
@@ -103,6 +103,16 @@ class FakeAuthService extends AuthService {
     if (_joinInProgress) {
       _joinInProgress = false;
       notifyListeners();
+    }
+  }
+
+  /// Returns the current Supabase user, or null if Supabase is not initialized
+  /// (e.g. in integration-test processes that never call Supabase.initialize).
+  User? get _supabaseCurrentUser {
+    try {
+      return Supabase.instance.client.auth.currentUser;
+    } catch (_) {
+      return null;
     }
   }
 

@@ -149,11 +149,29 @@ tenants / invitation status, and browse the full tenancy history with issues.
 
 ## Infrastructure / quality
 
-- [ ] **Restore integration_test setup for full login flow** — the
-  `integration_test/` and `test_driver/` directories were removed when
-  switching to widget tests. A real end-to-end test (launch app in Chrome,
-  log in as `lars@example.com`, verify navigation shell) still needs the
-  `flutter drive` + ChromeDriver path wired up.
+- [x] **Integration (e2e) test setup** — `integration_test/` package wired.
+  `test_driver/integration_test.dart` added. `FakeAuthService` made
+  Supabase-safe so it can run in a test process without `Supabase.initialize`.
+
+  Two test suites, both run against `FakeApiClient` seed data — no backend:
+  - `integration_test/address_detail_flow_test.dart` — address detail →
+    tenancy history → issue detail navigation chain (4 tests).
+  - `integration_test/login_flow_test.dart` — unauthenticated start, wrong
+    password error, tenant login → two-tab shell, profile tab, staff login
+    (5 tests).
+
+  **How to run** (ChromeDriver must be on PATH or use the local binary):
+
+  ```sh
+  # Start ChromeDriver in one terminal
+  chromedriver --port=4444
+
+  # Run a single suite
+  flutter drive \
+    --driver=test_driver/integration_test.dart \
+    --target=integration_test/login_flow_test.dart \
+    -d web-server --browser-name=chrome
+  ```
 
 - [ ] **Real ApiClient implementations** — `getHousingInvitations`,
   `createInvitation`, `cancelInvitation` all `throw UnimplementedError()` in

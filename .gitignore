@@ -38,6 +38,7 @@ lib/core/supabase_config.dart
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
+.metadata
 /build/
 /coverage/
 
@@ -53,5 +54,6 @@ app.*.map.json
 /android/app/release
 
 /seed_data/
-.claude/worktrees/agent-a1f5805cb928230d9
-.claude/worktrees/agent-aab93e2fd3a9c4f55
+.claude/worktrees/
+/windows/
+/chromedriver/
