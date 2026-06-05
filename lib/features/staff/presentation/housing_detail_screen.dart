@@ -6,11 +6,13 @@ import '../../../core/models/address.dart';
 import '../../../core/models/housing.dart';
 import '../../../core/models/invitation.dart';
 import '../../../core/models/issue.dart';
+import '../../../core/models/tenant_profile.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/widgets/adaptive_layout.dart';
 import '../../../core/widgets/adaptive_sheet.dart';
 import '../../../l10n/app_localizations.dart';
+import 'address_widgets.dart';
 import 'housing_detail_view_model.dart';
 import 'housing_issues_view_model.dart';
 
@@ -94,7 +96,7 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
                 ),
               ],
               const SizedBox(height: 16),
-              _LinkBox(link: link),
+              LinkBox(link: link),
               const SizedBox(height: 16),
               FilledButton.icon(
                 onPressed: () {
@@ -115,6 +117,49 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
         ),
       ),
     ).whenComplete(_viewModel.clearCreatedInvitation);
+  }
+
+  void _showAddressDetail(BuildContext context, Address address) {
+    final status = _viewModel.statusFor(address);
+    final invitation = _viewModel.invitations
+        .where((inv) => inv.addressId == address.id)
+        .firstOrNull;
+    final link =
+        invitation != null ? _viewModel.invitationLink(invitation) : null;
+
+    showAdaptiveSheet<void>(
+      context: context,
+      builder: (ctx) => _AddressDetailSheet(
+        address: address,
+        status: status,
+        invitation: invitation,
+        invitationLink: link,
+        apiClient: widget.apiClient,
+        onCreateInvitation: () {
+          Navigator.of(ctx).pop();
+          _viewModel.createInvitation(address.id);
+        },
+        onCancelInvitation: invitation != null
+            ? () {
+                Navigator.of(ctx).pop();
+                _viewModel.cancelInvitation(invitation.id);
+              }
+            : null,
+        onCopyLink: link != null
+            ? () {
+                Clipboard.setData(ClipboardData(text: link));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.inviteLinkCopied,
+                    ),
+                  ),
+                );
+                Navigator.of(ctx).pop();
+              }
+            : null,
+      ),
+    );
   }
 
   @override
@@ -198,6 +243,11 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
         _UnitsTab(
           sorted: sorted,
           viewModel: _viewModel,
+          onAddressTap: (address) => context.push(
+            '/admin/housing/${address.housingId}/address/${address.id}',
+            extra: address,
+          ),
+          onAddressPeek: (address) => _showAddressDetail(context, address),
         ),
         _IssuesTab(
           viewModel: _issuesViewModel,
@@ -215,8 +265,15 @@ class _HousingDetailScreenState extends State<HousingDetailScreen> {
 class _UnitsTab extends StatelessWidget {
   final List<Address> sorted;
   final HousingDetailViewModel viewModel;
+  final ValueChanged<Address> onAddressTap;
+  final ValueChanged<Address> onAddressPeek;
 
-  const _UnitsTab({required this.sorted, required this.viewModel});
+  const _UnitsTab({
+    required this.sorted,
+    required this.viewModel,
+    required this.onAddressTap,
+    required this.onAddressPeek,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -241,6 +298,8 @@ class _UnitsTab extends StatelessWidget {
               isCreating: viewModel.isCreating(a.id),
               onInvite: () => viewModel.createInvitation(a.id),
               onCancel: (invId) => viewModel.cancelInvitation(invId),
+              onTap: () => onAddressTap(a),
+              onPeek: () => onAddressPeek(a),
             ),
           );
         },
@@ -362,6 +421,8 @@ class _AddressRow extends StatelessWidget {
   final bool isCreating;
   final VoidCallback onInvite;
   final ValueChanged<String> onCancel;
+  final VoidCallback? onTap;
+  final VoidCallback? onPeek;
 
   const _AddressRow({
     required this.address,
@@ -371,6 +432,8 @@ class _AddressRow extends StatelessWidget {
     required this.isCreating,
     required this.onInvite,
     required this.onCancel,
+    this.onTap,
+    this.onPeek,
   });
 
   @override
@@ -379,80 +442,58 @@ class _AddressRow extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  address.shortDisplayAddress,
-                  style:
-                      text.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 4),
-                _AddressStatusChip(status: status, l10n: l10n),
-              ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: colors.outlineVariant),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    address.shortDisplayAddress,
+                    style:
+                        text.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 4),
+                  AddressStatusChip(status: status, l10n: l10n),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          _AddressAction(
-            status: status,
-            invitation: invitation,
-            isCancelling: isCancelling,
-            isCreating: isCreating,
-            onInvite: onInvite,
-            onCancel: onCancel,
-            l10n: l10n,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AddressStatusChip extends StatelessWidget {
-  final AddressStatus status;
-  final AppLocalizations l10n;
-
-  const _AddressStatusChip({required this.status, required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final (label, bg, fg) = switch (status) {
-      AddressStatus.occupied => (
-          l10n.addressStatusOccupied,
-          colors.secondaryContainer,
-          colors.onSecondaryContainer,
+            const SizedBox(width: 4),
+            _AddressAction(
+              status: status,
+              invitation: invitation,
+              isCancelling: isCancelling,
+              isCreating: isCreating,
+              onInvite: onInvite,
+              onCancel: onCancel,
+              l10n: l10n,
+            ),
+            IconButton(
+              icon: Icon(
+                Icons.info_outline,
+                size: 18,
+                color: colors.onSurfaceVariant,
+              ),
+              tooltip: l10n.addressDetailPreviewTooltip,
+              onPressed: onPeek,
+              style: IconButton.styleFrom(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size(32, 32),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+          ],
         ),
-      AddressStatus.invitationPending => (
-          l10n.addressStatusInvitationPending,
-          colors.tertiaryContainer,
-          colors.onTertiaryContainer,
-        ),
-      AddressStatus.vacant => (
-          l10n.addressStatusVacant,
-          colors.surfaceContainerHighest,
-          colors.onSurfaceVariant,
-        ),
-    };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg),
       ),
     );
   }
@@ -597,27 +638,176 @@ class _IssueTile extends StatelessWidget {
   }
 }
 
-// ---- Link box ---------------------------------------------------------------
+// ---- Address detail sheet ---------------------------------------------------
 
-class _LinkBox extends StatelessWidget {
-  final String link;
+class _AddressDetailSheet extends StatelessWidget {
+  final Address address;
+  final AddressStatus status;
+  final Invitation? invitation;
+  final String? invitationLink;
+  final ApiClient apiClient;
+  final VoidCallback onCreateInvitation;
+  final VoidCallback? onCancelInvitation;
+  final VoidCallback? onCopyLink;
 
-  const _LinkBox({required this.link});
+  const _AddressDetailSheet({
+    required this.address,
+    required this.status,
+    required this.apiClient,
+    required this.onCreateInvitation,
+    this.invitation,
+    this.invitationLink,
+    this.onCancelInvitation,
+    this.onCopyLink,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final text = Theme.of(context).textTheme;
     final colors = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colors.outlineVariant),
-      ),
-      child: SelectableText(
-        link,
-        style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              address.shortDisplayAddress,
+              style: text.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 6),
+            AddressStatusChip(status: status, l10n: l10n),
+            const SizedBox(height: 20),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+            ..._buildSection(context, l10n, colors, text),
+          ],
+        ),
       ),
     );
   }
+
+  List<Widget> _buildSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    ColorScheme colors,
+    TextTheme text,
+  ) {
+    switch (status) {
+      case AddressStatus.occupied:
+        return [_TenantsSection(address: address, apiClient: apiClient, l10n: l10n)];
+      case AddressStatus.invitationPending:
+        final inv = invitation!;
+        final link = invitationLink ?? '';
+        return [
+          Text(
+            l10n.addressStatusInvitationPending,
+            style: text.labelLarge?.copyWith(color: colors.onSurfaceVariant),
+          ),
+          const SizedBox(height: 12),
+          LinkBox(link: link),
+          const SizedBox(height: 8),
+          Text(
+            '${l10n.addressInviteExpires} ${_formatDate(inv.expiresAt)}',
+            style: text.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onCopyLink,
+                  icon: const Icon(Icons.copy, size: 16),
+                  label: Text(l10n.inviteCopyLink),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton.tonal(
+                  onPressed: onCancelInvitation,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: colors.errorContainer,
+                    foregroundColor: colors.onErrorContainer,
+                  ),
+                  child: Text(l10n.addressCancelInvitationFull),
+                ),
+              ),
+            ],
+          ),
+        ];
+      case AddressStatus.vacant:
+        return [
+          Text(
+            l10n.addressVacantHint,
+            style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+          ),
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            onPressed: onCreateInvitation,
+            icon: const Icon(Icons.send),
+            label: Text(l10n.addressInviteTenant),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+            ),
+          ),
+        ];
+    }
+  }
+
+  static String _formatDate(DateTime dt) =>
+      '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
 }
+
+// ---- Tenants section --------------------------------------------------------
+
+class _TenantsSection extends StatelessWidget {
+  final Address address;
+  final ApiClient apiClient;
+  final AppLocalizations l10n;
+
+  const _TenantsSection({
+    required this.address,
+    required this.apiClient,
+    required this.l10n,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final colors = Theme.of(context).colorScheme;
+
+    return FutureBuilder<List<TenantProfile>>(
+      future: apiClient.getAddressTenants(address.id),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: CircularProgressIndicator()),
+          );
+        }
+        final tenants = snapshot.data ?? [];
+        if (tenants.isEmpty) {
+          return Text(
+            l10n.addressNoTenants,
+            style: text.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.addressTenantsSection,
+              style: text.labelLarge?.copyWith(color: colors.onSurfaceVariant),
+            ),
+            const SizedBox(height: 12),
+            ...tenants.map((t) => TenantTile(tenant: t)),
+          ],
+        );
+      },
+    );
+  }
+}
+

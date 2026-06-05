@@ -406,6 +406,14 @@ class FakeApiClient extends ApiClient {
     );
   }
 
+  @override
+  Future<List<TenantProfile>> getAddressTenants(String addressId) async {
+    await _wait();
+    return _tenants
+        .where((t) => t.currentAddressId == addressId)
+        .toList();
+  }
+
   // ---- Admin ---------------------------------------------------------------
 
   @override
@@ -489,6 +497,8 @@ class FakeApiClient extends ApiClient {
     TenantProfile(
       id: _idLars,
       email: 'lars@example.com',
+      name: 'Lars Hansen',
+      phoneNumber: '+45 23 45 67 89',
       currentHousingId: _idHousingAab,
       currentAddressId: _idAddrRente23_1tv,
       createdAt: DateTime(2023, 3, 1),
@@ -496,6 +506,8 @@ class FakeApiClient extends ApiClient {
     TenantProfile(
       id: _idMaria,
       email: 'maria@example.com',
+      name: 'Maria Andersen',
+      phoneNumber: '+45 87 65 43 21',
       currentHousingId: _idHousingAab,
       currentAddressId: _idAddrRente23_1th,
       createdAt: DateTime(2022, 9, 15),

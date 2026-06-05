@@ -359,6 +359,14 @@ class ApiClient {
     throw UnimplementedError();
   }
 
+  /// Returns all tenant profiles currently registered at [addressId].
+  Future<List<TenantProfile>> getAddressTenants(String addressId) async {
+    return _getList(
+      '/addresses/$addressId/tenants',
+      TenantProfile.fromJson,
+    );
+  }
+
   /// Admin endpoints
   Future<Issue> markNeedsAssistance(String issueId) async {
     return _patch(

@@ -69,6 +69,29 @@
   "addressStatusInvitationPending": "Invitation afventer",
   "addressInviteTenant": "Inviter lejer",
   "addressCancelInvitation": "Annuller",
+  "addressCancelInvitationFull": "Annuller invitation",
+  "addressTenantsSection": "Registrerede lejere",
+  "addressNoTenants": "Ingen registrerede lejere",
+  "addressInviteExpires": "Udløber",
+  "addressVacantHint": "Ingen aktiv lejer",
+  "addressDetailHistorySection": "Lejemålshistorik",
+  "addressDetailMovedIn": "Indflyttet",
+  "addressDetailMovedOut": "Fraflyttet",
+  "addressDetailCurrentTenant": "Aktuel",
+  "addressDetailNoHistory": "Ingen registrerede tidligere lejere",
+  "addressDetailPreviewTooltip": "Hurtigt overblik",
+  "addressDetailIssueCount": "{count, plural, one{{count} sag} other{{count} sager}}",
+  "@addressDetailIssueCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "issueHandledBy": "Behandlet af {name}",
+  "@issueHandledBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
   "inviteLinkCreatedTitle": "Invitation oprettet",
   "cancelButton": "Annuller",
   "confirmButton": "Bekræft",

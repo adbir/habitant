@@ -31,6 +31,7 @@ Future<T?> showAdaptiveSheet<T>({
   return showModalBottomSheet<T>(
     context: context,
     showDragHandle: true,
+    isScrollControlled: true,
     builder: builder,
   );
 }

@@ -162,6 +162,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addressCancelInvitation => 'Cancel';
 
   @override
+  String get addressCancelInvitationFull => 'Cancel invitation';
+
+  @override
+  String get addressTenantsSection => 'Registered tenants';
+
+  @override
+  String get addressNoTenants => 'No registered tenants';
+
+  @override
+  String get addressInviteExpires => 'Expires';
+
+  @override
+  String get addressVacantHint => 'No active tenant';
+
+  @override
+  String get addressDetailHistorySection => 'Tenancy history';
+
+  @override
+  String get addressDetailMovedIn => 'Moved in';
+
+  @override
+  String get addressDetailMovedOut => 'Moved out';
+
+  @override
+  String get addressDetailCurrentTenant => 'Current';
+
+  @override
+  String get addressDetailNoHistory => 'No previous tenants on record';
+
+  @override
+  String get addressDetailPreviewTooltip => 'Quick view';
+
+  @override
+  String addressDetailIssueCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count issues',
+      one: '$count issue',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String issueHandledBy(String name) {
+    return 'Handled by $name';
+  }
+
+  @override
   String get inviteLinkCreatedTitle => 'Invitation created';
 
   @override
