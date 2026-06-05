@@ -302,6 +302,18 @@ abstract class AppLocalizations {
   /// **'Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.'**
   String get awaitingInvitationBody;
 
+  /// No description provided for @formerTenantBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve moved out'**
+  String get formerTenantBannerTitle;
+
+  /// No description provided for @formerTenantBannerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You are no longer linked to an address. Your past issues are shown below.'**
+  String get formerTenantBannerBody;
+
   /// No description provided for @adminDashboardTitle.
   ///
   /// In en, this message translates to:
@@ -799,6 +811,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dark theme'**
   String get themeToggleToDark;
+
+  /// No description provided for @profileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTitle;
+
+  /// No description provided for @profileAccountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'ACCOUNT'**
+  String get profileAccountSection;
+
+  /// No description provided for @profileAddressSection.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR ADDRESS'**
+  String get profileAddressSection;
+
+  /// No description provided for @profileNoAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Not linked to an address'**
+  String get profileNoAddress;
+
+  /// No description provided for @profileClaimInvitation.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim invitation'**
+  String get profileClaimInvitation;
+
+  /// No description provided for @claimInvitationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter invitation'**
+  String get claimInvitationTitle;
+
+  /// No description provided for @claimInvitationFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation link or token'**
+  String get claimInvitationFieldLabel;
+
+  /// No description provided for @claimInvitationFieldHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste link or bare token'**
+  String get claimInvitationFieldHint;
+
+  /// No description provided for @claimInvitationContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get claimInvitationContinue;
+
+  /// No description provided for @claimInvitationEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an invitation link or token'**
+  String get claimInvitationEmptyError;
+
+  /// No description provided for @claimInvitationInvalidError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not find a valid token in the provided link'**
+  String get claimInvitationInvalidError;
 }
 
 class _AppLocalizationsDelegate

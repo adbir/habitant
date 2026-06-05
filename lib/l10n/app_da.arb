@@ -49,6 +49,9 @@
   "awaitingInvitationTitle": "Afventer tildeling",
   "awaitingInvitationBody": "Din konto er oprettet. Når din boligforening sender dig et invitationslink, kan du bruge det til at tilknytte din bolig.",
 
+  "formerTenantBannerTitle": "Du er fraflyttet",
+  "formerTenantBannerBody": "Din konto er ikke længere tilknyttet en bolig. Dine tidligere meldinger vises nedenfor.",
+
   "adminDashboardTitle": "Overblik",
   "adminHousingsSectionTitle": "Boligforeninger",
   "adminStatTotalAddresses": "Boliger i alt",
@@ -159,5 +162,18 @@
   "inviteCreateAnother": "Opret ny invitation",
 
   "themeToggleToLight": "Lyst tema",
-  "themeToggleToDark": "Mørkt tema"
+  "themeToggleToDark": "Mørkt tema",
+
+  "profileTitle": "Profil",
+  "profileAccountSection": "KONTO",
+  "profileAddressSection": "DIN BOLIG",
+  "profileNoAddress": "Ikke tilknyttet en bolig",
+  "profileClaimInvitation": "Indløs invitation",
+
+  "claimInvitationTitle": "Indtast invitation",
+  "claimInvitationFieldLabel": "Invitationslink eller token",
+  "claimInvitationFieldHint": "Sæt link eller token ind",
+  "claimInvitationContinue": "Fortsæt",
+  "claimInvitationEmptyError": "Indtast venligst et invitationslink eller token",
+  "claimInvitationInvalidError": "Der blev ikke fundet et gyldigt token i det angivne link"
 }

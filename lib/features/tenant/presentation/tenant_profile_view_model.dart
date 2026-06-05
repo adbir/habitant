@@ -4,16 +4,11 @@ import 'package:flutter/foundation.dart';
 
 import '../../../core/models/address.dart';
 import '../../../core/models/housing.dart';
-import '../../../core/models/issue.dart';
 import '../../../core/models/tenant_profile.dart';
 import '../../../core/services/api_client.dart';
 import '../../../core/services/auth_service.dart';
 
-/// Loads and holds the data for the tenant home screen.
-///
-/// After the profile loads, address, housing name, and issues are all fetched
-/// in parallel to minimise wait time.
-class TenantHomeViewModel extends ChangeNotifier {
+class TenantProfileViewModel extends ChangeNotifier {
   final ApiClient _apiClient;
   final AuthService _authService;
 
@@ -22,9 +17,8 @@ class TenantHomeViewModel extends ChangeNotifier {
   TenantProfile? _profile;
   Housing? _housing;
   Address? _address;
-  List<Issue> _issues = const [];
 
-  TenantHomeViewModel({
+  TenantProfileViewModel({
     required ApiClient apiClient,
     required AuthService authService,
   })  : _apiClient = apiClient,
@@ -35,12 +29,6 @@ class TenantHomeViewModel extends ChangeNotifier {
   TenantProfile? get profile => _profile;
   Housing? get housing => _housing;
   Address? get address => _address;
-  List<Issue> get issues => _issues;
-
-  /// True when the tenant has moved out (no current address) but still has
-  /// past issues on record. Used to show history without a "report" FAB.
-  bool get isFormerTenant =>
-      !(_profile?.isOnboarded ?? false) && _issues.isNotEmpty;
 
   Future<void> load() async {
     _isLoading = true;
@@ -55,25 +43,20 @@ class TenantHomeViewModel extends ChangeNotifier {
       _profile = profile;
 
       if (profile.isOnboarded) {
-        final housingId = profile.currentHousingId!;
-        final addressId = profile.currentAddressId!;
-
         final results = await Future.wait([
-          _apiClient.getHousing(housingId),
-          _apiClient.getAddress(housingId, addressId),
-          _apiClient.getTenantAllIssues(tenantId),
+          _apiClient.getHousing(profile.currentHousingId!),
+          _apiClient.getAddress(
+            profile.currentHousingId!,
+            profile.currentAddressId!,
+          ),
         ]);
-
         _housing = results[0] as Housing;
         _address = results[1] as Address;
-        _issues = (results[2] as List).cast<Issue>();
-      } else {
-        _issues = await _apiClient.getTenantAllIssues(tenantId);
       }
     } catch (e, s) {
       developer.log(
-        'Failed to load tenant home',
-        name: 'TenantHomeViewModel',
+        'Failed to load tenant profile',
+        name: 'TenantProfileViewModel',
         level: 1000,
         error: e,
         stackTrace: s,
@@ -84,6 +67,4 @@ class TenantHomeViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  Future<void> refresh() => load();
 }

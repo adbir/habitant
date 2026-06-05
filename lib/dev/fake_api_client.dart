@@ -23,6 +23,7 @@ import '../core/services/api_client.dart';
 ///   lars@example.com    — tenant, housing + address set
 ///   maria@example.com   — tenant, housing + address set
 ///   peter@example.com   — tenant, no housing yet (onboarding test)
+///   anna@example.com    — former tenant, no current housing, has past issues
 ///   admin@aab.dk        — admin
 ///   tech@aab.dk         — maintenanceStaff
 class FakeApiClient extends ApiClient {
@@ -173,6 +174,12 @@ class FakeApiClient extends ApiClient {
     return _issues
         .where((i) => i.tenantId == tenantId && i.addressId == addressId)
         .toList();
+  }
+
+  @override
+  Future<List<Issue>> getTenantAllIssues(String tenantId) async {
+    await _wait();
+    return _issues.where((i) => i.tenantId == tenantId).toList();
   }
 
   @override
@@ -477,6 +484,7 @@ class FakeApiClient extends ApiClient {
     'lars@example.com': (_idLars, UserRole.tenant),
     'maria@example.com': (_idMaria, UserRole.tenant),
     'peter@example.com': (_idPeter, UserRole.tenant),
+    'anna@example.com': (_idAnna, UserRole.tenant),
     'admin@aab.dk': (_idStaffAdmin, UserRole.admin),
     'tech@aab.dk': (_idStaffTech, UserRole.maintenanceStaff),
   };
@@ -485,6 +493,8 @@ class FakeApiClient extends ApiClient {
   static const _idLars = '550e8400-e29b-41d4-a716-446655440001';
   static const _idMaria = '550e8400-e29b-41d4-a716-446655440002';
   static const _idPeter = '550e8400-e29b-41d4-a716-446655440003';
+  // Former tenant — no current housing, used to test the moved-out history view.
+  static const _idAnna = '550e8400-e29b-41d4-a716-446655440004';
 
   // Staff IDs
   static const _idStaffAdmin = '550e8400-e29b-41d4-a716-446655441001';
@@ -507,6 +517,9 @@ class FakeApiClient extends ApiClient {
   static const _idIssueMold = 'f47ac10b-58cc-4372-a567-0e02b2c3d102';
   static const _idIssueWindow = 'f47ac10b-58cc-4372-a567-0e02b2c3d103';
   static const _idIssueHood = 'f47ac10b-58cc-4372-a567-0e02b2c3d104';
+  // Anna's past issues (she has since moved out).
+  static const _idIssuePipe = 'f47ac10b-58cc-4372-a567-0e02b2c3d105';
+  static const _idIssueBalcony = 'f47ac10b-58cc-4372-a567-0e02b2c3d106';
 
   // Comment IDs
   static const _idCommentR1 = 'cc000001-0000-0000-0000-000000000001';
@@ -542,6 +555,14 @@ class FakeApiClient extends ApiClient {
       id: _idPeter,
       email: 'peter@example.com',
       createdAt: DateTime(2024, 1, 10),
+    ),
+    // Anna has moved out — no current housing, but has past issues.
+    TenantProfile(
+      id: _idAnna,
+      email: 'anna@example.com',
+      name: 'Anna Sørensen',
+      phoneNumber: '+45 61 23 45 67',
+      createdAt: DateTime(2021, 5, 20),
     ),
   ];
 
@@ -599,7 +620,14 @@ class FakeApiClient extends ApiClient {
           postalCode: '2400',
           city: 'København NV',
           isOccupied: false,
-          history: [],
+          history: [
+            TenancyRecord(
+              tenantId: _idAnna,
+              movedInAt: DateTime(2021, 5, 20),
+              movedOutAt: DateTime(2024, 3, 1),
+              issueIds: [_idIssuePipe, _idIssueBalcony],
+            ),
+          ],
         ),
         Address(
           id: _idAddrToms1572th,
@@ -777,6 +805,48 @@ class FakeApiClient extends ApiClient {
         ),
       ],
       createdAt: DateTime(2024, 11, 8),
+    ),
+    // Anna's past issues — she has since moved out of Tomsgårdsvej 157.
+    Issue(
+      id: _idIssuePipe,
+      tenantId: _idAnna,
+      addressId: _idAddrToms157Stv,
+      housingId: _idHousingAab,
+      description:
+          'Vandrør under køkkenvasken drypper. Har sat en spand under, '
+          'men det skal repareres snarest.',
+      photoUrls: [],
+      status: IssueStatus.completed,
+      needAssistance: false,
+      maintenanceStaffId: _idStaffTech,
+      assignedToName: 'Thomas',
+      updates: [
+        MaintenanceUpdate(
+          id: 'b14a7b8c-d47b-4734-b301-9e1a2f5c1003',
+          maintenanceStaffId: _idStaffTech,
+          description: 'Udskiftet tætning og pakninger. Ingen videre læk.',
+          proofPhotoUrls: [],
+          completedAt: DateTime(2023, 8, 14),
+        ),
+      ],
+      comments: [],
+      createdAt: DateTime(2023, 8, 10),
+      updatedAt: DateTime(2023, 8, 14),
+    ),
+    Issue(
+      id: _idIssueBalcony,
+      tenantId: _idAnna,
+      addressId: _idAddrToms157Stv,
+      housingId: _idHousingAab,
+      description:
+          'Gelænderet på altanen er løst – rokker tydeligt. '
+          'Sikkerhedsmæssigt problem.',
+      photoUrls: [],
+      status: IssueStatus.rejected,
+      needAssistance: false,
+      updates: [],
+      comments: [],
+      createdAt: DateTime(2024, 1, 5),
     ),
   ];
 

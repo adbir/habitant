@@ -49,6 +49,9 @@
   "awaitingInvitationTitle": "Awaiting assignment",
   "awaitingInvitationBody": "Your account has been created. When your housing association sends you an invitation link, use it to connect your apartment.",
 
+  "formerTenantBannerTitle": "You've moved out",
+  "formerTenantBannerBody": "You are no longer linked to an address. Your past issues are shown below.",
+
   "adminDashboardTitle": "Overview",
   "adminHousingsSectionTitle": "Housing associations",
   "adminStatTotalAddresses": "Total units",
@@ -159,5 +162,18 @@
   "inviteCreateAnother": "Create another invitation",
 
   "themeToggleToLight": "Light theme",
-  "themeToggleToDark": "Dark theme"
+  "themeToggleToDark": "Dark theme",
+
+  "profileTitle": "Profile",
+  "profileAccountSection": "ACCOUNT",
+  "profileAddressSection": "YOUR ADDRESS",
+  "profileNoAddress": "Not linked to an address",
+  "profileClaimInvitation": "Claim invitation",
+
+  "claimInvitationTitle": "Enter invitation",
+  "claimInvitationFieldLabel": "Invitation link or token",
+  "claimInvitationFieldHint": "Paste link or bare token",
+  "claimInvitationContinue": "Continue",
+  "claimInvitationEmptyError": "Please enter an invitation link or token",
+  "claimInvitationInvalidError": "Could not find a valid token in the provided link"
 }

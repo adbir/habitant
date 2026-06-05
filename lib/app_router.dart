@@ -20,8 +20,10 @@ import 'features/auth/presentation/signup_screen.dart';
 import 'features/maintenance/presentation/issue_detail_screen.dart';
 import 'features/maintenance/presentation/maintenance_dashboard_screen.dart';
 import 'features/tenant/presentation/report_issue_screen.dart';
+import 'features/tenant/presentation/tenant_claim_invitation_screen.dart';
 import 'features/tenant/presentation/tenant_home_screen.dart';
 import 'features/tenant/presentation/tenant_issue_detail_screen.dart';
+import 'features/tenant/presentation/tenant_profile_screen.dart';
 import 'l10n/app_localizations.dart';
 
 /// Whether [role] can access the admin dashboard (`/admin` routes).
@@ -138,6 +140,7 @@ class AppRouter {
         ShellRoute(
           builder: (context, state, child) {
             final l10n = AppLocalizations.of(context)!;
+            final location = state.uri.path;
             return AppShell(
               destinations: [
                 NavigationDestination(
@@ -145,9 +148,15 @@ class AppRouter {
                   selectedIcon: const Icon(Icons.home),
                   label: l10n.myIssues,
                 ),
+                NavigationDestination(
+                  icon: const Icon(Icons.person_outline),
+                  selectedIcon: const Icon(Icons.person),
+                  label: l10n.profileTitle,
+                ),
               ],
-              selectedIndex: 0,
-              onDestinationSelected: (_) => context.go('/tenant'),
+              selectedIndex: location.startsWith('/tenant/profile') ? 1 : 0,
+              onDestinationSelected: (index) =>
+                  context.go(index == 0 ? '/tenant' : '/tenant/profile'),
               authService: _authService,
               themeModeService: _themeModeService,
               child: child,
@@ -157,6 +166,13 @@ class AppRouter {
             GoRoute(
               path: '/tenant',
               builder: (context, state) => TenantHomeScreen(
+                apiClient: _apiClient,
+                authService: _authService,
+              ),
+            ),
+            GoRoute(
+              path: '/tenant/profile',
+              builder: (context, state) => TenantProfileScreen(
                 apiClient: _apiClient,
                 authService: _authService,
               ),
@@ -185,6 +201,10 @@ class AppRouter {
               issue: issue,
             );
           },
+        ),
+        GoRoute(
+          path: '/tenant/claim-invitation',
+          builder: (_, _) => const TenantClaimInvitationScreen(),
         ),
 
         // ── Staff shell ────────────────────────────────────────────────────

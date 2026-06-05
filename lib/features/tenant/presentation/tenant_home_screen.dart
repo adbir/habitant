@@ -91,6 +91,27 @@ class _TenantHomeScreenState extends State<TenantHomeScreen> {
       );
     }
 
+    // Former tenant: no current address but has past issues.
+    if (_viewModel.isFormerTenant) {
+      return RefreshIndicator(
+        onRefresh: _viewModel.refresh,
+        child: ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          itemCount: _viewModel.issues.length + 1,
+          separatorBuilder: (_, index) =>
+              index == 0 ? const SizedBox(height: 16) : const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            if (index == 0) return _FormerTenantBanner(l10n: l10n);
+            return _IssueCard(
+              issue: _viewModel.issues[index - 1],
+              l10n: l10n,
+            );
+          },
+        ),
+      );
+    }
+
+    // New user: no housing and no issues — awaiting their invitation link.
     if (_viewModel.address == null) {
       return _AwaitingInvitationState(l10n: l10n);
     }
@@ -285,6 +306,55 @@ class _NeedsAssistanceBadge extends StatelessWidget {
 }
 
 // ---- Empty and error states -------------------------------------------------
+
+class _FormerTenantBanner extends StatelessWidget {
+  final AppLocalizations l10n;
+
+  const _FormerTenantBanner({required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: colors.outlineVariant),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.history, size: 20, color: colors.onSurfaceVariant),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.formerTenantBannerTitle,
+                  style: text.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colors.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.formerTenantBannerBody,
+                  style: text.bodySmall?.copyWith(
+                    color: colors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class _AwaitingInvitationState extends StatelessWidget {
   final AppLocalizations l10n;

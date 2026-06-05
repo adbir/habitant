@@ -217,6 +217,15 @@ class ApiClient {
     );
   }
 
+  /// All issues ever reported by [tenantId], across every address they have
+  /// lived at. Used so former tenants can still view their history.
+  Future<List<Issue>> getTenantAllIssues(String tenantId) async {
+    return _getList(
+      '/tenants/$tenantId/issues',
+      Issue.fromJson,
+    );
+  }
+
   /// Uploads a photo and returns its permanent URL.
   Future<String> uploadIssuePhoto(
     Uint8List bytes,

@@ -84,9 +84,66 @@ tenants / invitation status, and browse the full tenancy history with issues.
   comments only (`!c.isPrivate` filter). No comment input. 17 widget tests
   in `test/features/tenant/tenant_issue_detail_screen_test.dart`.
 
-- [ ] **Profile / housing switcher** — tenant profile page where a user can
-  see their current address and claim a new invitation link to move housing.
-  Not started.
+- [x] **Dev mode auth isolation (FakeAuthService)** — `AuthService` made
+  abstract. `SupabaseAuthService` is the release impl; `FakeAuthService`
+  (in `lib/dev/`) handles debug-mode login against `FakeApiClient` seed data
+  with no Supabase network calls. `main.dart` swaps via `kDebugMode`.
+  All 153 tests pass.
+
+- [x] **Profile / housing switcher** — tenant profile page at `/tenant/profile`.
+  Second tab in the tenant navigation shell (person icon → "Profile").
+
+  **What it shows:**
+  - Name, email, primary + secondary phone.
+  - Current address block (housing name + full address) when onboarded.
+  - "You are not linked to an address" notice for former/new tenants.
+
+  **Housing switcher action:**
+  - "Claim invitation" button (always visible).
+  - Tapping opens a full-screen input (`/tenant/claim-invitation`) with a
+    single text field — paste an invitation URL or bare token.
+  - On submit: strip any URL prefix, extract the UUID token, navigate to
+    `/join?token={token}`. The existing join flow handles the rest.
+
+  **Architecture:**
+  - `TenantProfileViewModel` (`ChangeNotifier`) — loads profile + address in
+    parallel (`Future.wait`). Stateless after load; no mutations.
+  - Route `/tenant/profile` inside the tenant `ShellRoute`.
+  - Route `/tenant/claim-invitation` outside the shell (full-screen).
+  - `AppRouter` tenant `onDestinationSelected`: index 0 → `/tenant`,
+    index 1 → `/tenant/profile`.
+
+  **Tests:**
+  - VM unit tests: onboarded (profile + address loaded), former tenant (profile
+    only, address null), new user (profile only), API error.
+  - Widget tests: address section visible when onboarded, hidden when not;
+    claim button always present; name/email rendered.
+
+- [x] **Tenant issue history across all addresses** — a tenant who has moved
+  out (or moved to a new housing) cannot see their old issues. Two bugs:
+
+  1. `getTenantIssues(tenantId, addressId)` is scoped to a single address.
+     Issues from previous addresses are never fetched, even for an active tenant
+     who has changed housing.
+  2. After moving out, `TenantProfile.isOnboarded` returns false
+     (`currentHousingId == null`). `TenantHomeViewModel.load()` skips the issue
+     fetch entirely when not onboarded, so the home screen shows
+     "awaiting invitation" instead of the tenant's history.
+
+  **What needs to change:**
+  - Add `getTenantAllIssues(tenantId)` to `ApiClient` — returns all issues
+    ever reported by this tenant, regardless of address. `FakeApiClient`
+    filters `_issues` by `tenantId` only.
+  - `TenantHomeViewModel`: always call `getTenantAllIssues(tenantId)`;
+    only fetch current address + housing when `isOnboarded`.
+  - `TenantHomeScreen`: distinguish two "not onboarded" states:
+    - **Former tenant** (`!isOnboarded && issues.isNotEmpty`) — show the
+      issue list with a banner like "You are no longer assigned to a housing
+      unit — these are your past issues." No FAB (cannot report new issues).
+    - **New user** (`!isOnboarded && issues.isEmpty`) — keep the existing
+      "awaiting invitation" placeholder.
+  - Tests: VM unit tests for the three load paths (onboarded, former tenant,
+    new user); widget tests for the former-tenant banner and hidden FAB.
 
 ---
 
