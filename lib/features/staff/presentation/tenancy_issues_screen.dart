@@ -120,7 +120,7 @@ class _TenancyIssuesScreenState extends State<TenancyIssuesScreen> {
               itemCount: issues.length,
               itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: _IssueCard(
+                child: IssueCard(
                   issue: issues[index],
                   onTap: () => context.push(
                     '/staff/issues/${issues[index].id}',
@@ -139,12 +139,13 @@ class _TenancyIssuesScreenState extends State<TenancyIssuesScreen> {
 
 // ---- Issue card -------------------------------------------------------------
 
-class _IssueCard extends StatelessWidget {
+class IssueCard extends StatelessWidget {
   final Issue issue;
   final VoidCallback onTap;
   final AppLocalizations l10n;
 
-  const _IssueCard({
+  const IssueCard({
+    super.key,
     required this.issue,
     required this.onTap,
     required this.l10n,

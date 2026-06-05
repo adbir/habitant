@@ -14,6 +14,7 @@ import 'package:beboer_app/core/models/address.dart';
 import 'package:beboer_app/dev/fake_api_client.dart';
 import 'package:beboer_app/features/staff/presentation/address_detail_screen.dart';
 import 'package:beboer_app/features/staff/presentation/tenancy_issues_screen.dart';
+
 import 'package:beboer_app/l10n/app_localizations.dart';
 
 // ---------------------------------------------------------------------------
@@ -154,8 +155,8 @@ void main() {
         findsOneWidget,
       );
 
-      // Window issue — verify three cards rendered
-      expect(find.byType(Card), findsNWidgets(3));
+      // Three issue cards total
+      expect(find.byType(IssueCard), findsNWidgets(3));
     },
   );
 
