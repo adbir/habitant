@@ -414,6 +414,31 @@ class FakeApiClient extends ApiClient {
         .toList();
   }
 
+  @override
+  Future<void> claimInvitation({
+    required String userId,
+    required String email,
+    required String housingId,
+    required String addressId,
+    String? phoneNumber,
+  }) async {
+    await _wait();
+    final idx = _tenants.indexWhere((t) => t.id == userId);
+    final updated = TenantProfile(
+      id: userId,
+      email: email,
+      phoneNumber: phoneNumber,
+      currentHousingId: housingId,
+      currentAddressId: addressId,
+      createdAt: idx >= 0 ? _tenants[idx].createdAt : DateTime.now(),
+    );
+    if (idx >= 0) {
+      _tenants[idx] = updated;
+    } else {
+      _tenants.add(updated);
+    }
+  }
+
   // ---- Admin ---------------------------------------------------------------
 
   @override

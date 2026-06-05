@@ -8,7 +8,7 @@ Guidelines for all UI and navigation work in this app. When in doubt, refer back
 
 Every piece of content that a user might read, act on, or share gets its own **full screen** and a dedicated route. Do not put content inside sheets or dialogs.
 
-```
+```text
 Admin shell (/admin)
   └─ Housing detail   /admin/housing/:id
        └─ Address detail   /admin/housing/:housingId/address/:addressId
@@ -24,6 +24,29 @@ Tenant shell (/tenant)
 ```
 
 Shell routes (inside `ShellRoute`) render navigation chrome (rail on desktop, bar on mobile). Detail and action routes sit **outside** the shell so they go full-screen with a back button and no nav chrome.
+
+---
+
+## Routing rules
+
+Two rules prevent router/screen timing bugs:
+
+1. **The router only blocks — screens navigate on success.**
+   `computeAuthRedirect` returns a redirect path when a user *must not* be
+   somewhere. It never drives positive navigation (what happens after a flow
+   completes). On completion, the screen calls `context.go(...)` or
+   `context.push(...)` directly. The join flow is the canonical example: the
+   router allows `/join` for all authenticated users unconditionally;
+   `JoinScreen` calls `context.go('/tenant')` when the VM reaches
+   `JoinStep.complete`.
+
+2. **All data mutations go through `ApiClient`.**
+   ViewModels must not call `_supabase.from(...).insert/update/upsert`
+   directly. Use `ApiClient` methods instead so the VM is testable with
+   `MockApiClient` and the fake client provides a working offline
+   implementation. `SupabaseClient` in VMs is allowed only for auth
+   operations (`signUp`, `verifyOTP`, `signInWithPassword`, `resend`,
+   `currentUser`).
 
 ---
 
@@ -66,7 +89,7 @@ Detail routes receive their primary model object through `state.extra` to avoid 
 ## Code conventions
 
 | Concern | Convention |
-|---|---|
+| --- | --- |
 | File names | `snake_case.dart` |
 | Widget / class names | `PascalCase` |
 | Private widgets | `_` prefix, defined at the bottom of the file that owns them |

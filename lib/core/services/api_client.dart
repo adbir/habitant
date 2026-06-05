@@ -359,6 +359,18 @@ class ApiClient {
     throw UnimplementedError();
   }
 
+  /// Assigns [addressId] and [housingId] to the tenant [userId].
+  /// Called after OTP verification to finalise an invitation claim.
+  Future<void> claimInvitation({
+    required String userId,
+    required String email,
+    required String housingId,
+    required String addressId,
+    String? phoneNumber,
+  }) async {
+    throw UnimplementedError();
+  }
+
   /// Returns all tenant profiles currently registered at [addressId].
   Future<List<TenantProfile>> getAddressTenants(String addressId) async {
     return _getList(
