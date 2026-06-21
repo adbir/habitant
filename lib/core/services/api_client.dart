@@ -1,7 +1,4 @@
-import 'dart:convert';
-import 'dart:developer' as developer;
 import 'dart:typed_data';
-import 'package:http/http.dart' as http;
 
 import '../models/address.dart';
 import '../models/housing.dart';
@@ -11,252 +8,40 @@ import '../models/paged_result.dart';
 import '../models/tenant_profile.dart';
 
 class ApiClient {
-  final String baseUrl;
   String? authToken;
 
-  ApiClient({
-    required this.baseUrl,
-    this.authToken,
-  });
+  ApiClient({this.authToken});
 
-  Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        if (authToken != null) 'Authorization': 'Bearer $authToken',
-      };
+  // Auth
 
-  Future<T> _get<T>(
-    String endpoint,
-    T Function(Map<String, dynamic>) fromJson,
-  ) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _headers,
-      );
+  Future<String> login(String email, String password) => throw UnimplementedError();
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return fromJson(json);
-      }
+  Future<void> signup(String email, String password, {String? phoneNumber}) =>
+      throw UnimplementedError();
 
-      throw ApiException(response.statusCode, response.body);
-    } catch (e, s) {
-      developer.log(
-        'GET $endpoint failed',
-        error: e,
-        stackTrace: s,
-        name: 'ApiClient',
-      );
-      rethrow;
-    }
-  }
+  Future<void> resendVerificationCode(String email) => throw UnimplementedError();
 
-  Future<List<T>> _getList<T>(
-    String endpoint,
-    T Function(Map<String, dynamic>) fromJson,
-  ) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _headers,
-      );
+  Future<String> verifyEmail(String email, String code) => throw UnimplementedError();
 
-      if (response.statusCode == 200) {
-        final list = jsonDecode(response.body) as List<dynamic>;
-        return list
-            .map((item) => fromJson(item as Map<String, dynamic>))
-            .toList();
-      }
+  // Housing
 
-      throw ApiException(response.statusCode, response.body);
-    } catch (e, s) {
-      developer.log(
-        'GET $endpoint failed',
-        error: e,
-        stackTrace: s,
-        name: 'ApiClient',
-      );
-      rethrow;
-    }
-  }
+  Future<Housing> getHousing(String housingId) => throw UnimplementedError();
 
-  Future<T> _post<T>(
-    String endpoint,
-    Map<String, dynamic> body,
-    T Function(Map<String, dynamic>) fromJson,
-  ) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _headers,
-        body: jsonEncode(body),
-      );
+  Future<Address> getAddress(String housingId, String addressId) =>
+      throw UnimplementedError();
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return fromJson(json);
-      }
+  // Tenant
 
-      throw ApiException(response.statusCode, response.body);
-    } catch (e, s) {
-      developer.log(
-        'POST $endpoint failed',
-        error: e,
-        stackTrace: s,
-        name: 'ApiClient',
-      );
-      rethrow;
-    }
-  }
+  Future<TenantProfile> getTenantProfile(String tenantId) => throw UnimplementedError();
 
-  Future<T> _patch<T>(
-    String endpoint,
-    Map<String, dynamic> body,
-    T Function(Map<String, dynamic>) fromJson,
-  ) async {
-    try {
-      final response = await http.patch(
-        Uri.parse('$baseUrl$endpoint'),
-        headers: _headers,
-        body: jsonEncode(body),
-      );
+  Future<List<Issue>> getTenantIssues(String tenantId, String addressId) =>
+      throw UnimplementedError();
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return fromJson(json);
-      }
+  /// All issues ever reported by [tenantId], across every address they have lived at.
+  Future<List<Issue>> getTenantAllIssues(String tenantId) => throw UnimplementedError();
 
-      throw ApiException(response.statusCode, response.body);
-    } catch (e, s) {
-      developer.log(
-        'PATCH $endpoint failed',
-        error: e,
-        stackTrace: s,
-        name: 'ApiClient',
-      );
-      rethrow;
-    }
-  }
-
-  /// Auth endpoints
-
-  Future<String> login(String email, String password) async {
-    final result = await _post(
-      '/auth/login',
-      {'email': email, 'password': password},
-      (json) => json['token'] as String,
-    );
-    return result;
-  }
-
-  /// Initiates signup by sending a verification code to [email].
-  Future<void> signup(
-    String email,
-    String password, {
-    String? phoneNumber,
-  }) async {
-    await _post(
-      '/auth/signup',
-      {
-        'email': email,
-        'password': password,
-        if (phoneNumber != null && phoneNumber.isNotEmpty)
-          'phoneNumber': phoneNumber,
-      },
-      (_) => null,
-    );
-  }
-
-  /// Resends the verification code to [email].
-  Future<void> resendVerificationCode(String email) async {
-    await _post(
-      '/auth/resend-code',
-      {'email': email},
-      (_) => null,
-    );
-  }
-
-  /// Verifies the OTP [code] for [email] and returns a JWT on success.
-  Future<String> verifyEmail(String email, String code) async {
-    final result = await _post(
-      '/auth/verify-email',
-      {'email': email, 'code': code},
-      (json) => json['token'] as String,
-    );
-    return result;
-  }
-
-  /// Returns a single housing by ID.
-  Future<Housing> getHousing(String housingId) async {
-    return _get('/housings/$housingId', Housing.fromJson);
-  }
-
-  /// Returns a single address by its housing and address IDs.
-  Future<Address> getAddress(String housingId, String addressId) async {
-    return _get(
-      '/housings/$housingId/addresses/$addressId',
-      Address.fromJson,
-    );
-  }
-
-  /// Tenant endpoints
-  Future<TenantProfile> getTenantProfile(String tenantId) async {
-    return _get(
-      '/tenants/$tenantId',
-      TenantProfile.fromJson,
-    );
-  }
-
-  Future<List<Issue>> getTenantIssues(
-    String tenantId,
-    String addressId,
-  ) async {
-    return _getList(
-      '/tenants/$tenantId/addresses/$addressId/issues',
-      Issue.fromJson,
-    );
-  }
-
-  /// All issues ever reported by [tenantId], across every address they have
-  /// lived at. Used so former tenants can still view their history.
-  Future<List<Issue>> getTenantAllIssues(String tenantId) async {
-    return _getList(
-      '/tenants/$tenantId/issues',
-      Issue.fromJson,
-    );
-  }
-
-  /// Uploads a photo and returns its permanent URL.
-  Future<String> uploadIssuePhoto(
-    Uint8List bytes,
-    String filename,
-  ) async {
-    try {
-      final uri = Uri.parse('$baseUrl/uploads/issue-photo');
-      final request = http.MultipartRequest('POST', uri);
-      if (authToken != null) {
-        request.headers['Authorization'] = 'Bearer $authToken';
-      }
-      request.files.add(
-        http.MultipartFile.fromBytes('photo', bytes, filename: filename),
-      );
-      final streamed = await request.send();
-      final response = await http.Response.fromStream(streamed);
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final json = jsonDecode(response.body) as Map<String, dynamic>;
-        return json['url'] as String;
-      }
-      throw ApiException(response.statusCode, response.body);
-    } catch (e, s) {
-      developer.log(
-        'POST /uploads/issue-photo failed',
-        error: e,
-        stackTrace: s,
-        name: 'ApiClient',
-      );
-      rethrow;
-    }
-  }
+  Future<String> uploadIssuePhoto(Uint8List bytes, String filename) =>
+      throw UnimplementedError();
 
   Future<Issue> reportIssue(
     String tenantId,
@@ -264,149 +49,61 @@ class ApiClient {
     String description,
     List<String> photoUrls, {
     String? alternativeContactPhone,
-  }) async {
-    return _post(
-      '/tenants/$tenantId/issues',
-      {
-        'addressId': addressId,
-        'description': description,
-        'photoUrls': photoUrls,
-        'alternativeContactPhone': ?alternativeContactPhone,
-      },
-      Issue.fromJson,
-    );
-  }
+  }) => throw UnimplementedError();
 
-  Future<void> moveTenantToAddress(
-    String tenantId,
-    String newAddressId,
-  ) async {
-    await _patch(
-      '/tenants/$tenantId/move-address',
-      {'newAddressId': newAddressId},
-      (json) => null,
-    );
-  }
+  Future<void> moveTenantToAddress(String tenantId, String newAddressId) =>
+      throw UnimplementedError();
 
-  /// Housing/Staff endpoints
-  Future<List<Housing>> getStaffHousings(String staffId) async {
-    return _getList(
-      '/staff/$staffId/housings',
-      Housing.fromJson,
-    );
-  }
+  // Staff
+
+  Future<List<Housing>> getStaffHousings(String staffId) => throw UnimplementedError();
 
   Future<PagedResult<Issue>> getHousingIssues(
     String housingId, {
     Set<IssueStatus>? statuses,
     int page = 0,
     int pageSize = 25,
-  }) async {
-    // Real implementation: build query string and call the backend.
-    // For now, throw UnimplementedError() — the fake client is the live impl.
-    throw UnimplementedError();
-  }
+  }) => throw UnimplementedError();
 
-  /// Returns a single issue by ID.
-  Future<Issue> getIssue(String issueId) async {
-    return _get('/issues/$issueId', Issue.fromJson);
-  }
+  Future<Issue> getIssue(String issueId) => throw UnimplementedError();
 
-  /// Adds a comment to an issue and returns the updated issue.
-  ///
-  /// [isPrivate] true limits visibility to staff; false also shows
-  /// the comment to the tenant.
-  Future<Issue> addIssueComment(
-    String issueId,
-    String body,
-    bool isPrivate,
-  ) async {
-    return _post(
-      '/issues/$issueId/comments',
-      {'body': body, 'isPrivate': isPrivate},
-      Issue.fromJson,
-    );
-  }
+  Future<Issue> addIssueComment(String issueId, String body, bool isPrivate) =>
+      throw UnimplementedError();
 
-  /// Maintenance endpoints
   Future<Issue> addMaintenanceUpdate(
     String issueId,
     String description,
     List<String> proofPhotoUrls,
-  ) async {
-    return _post(
-      '/issues/$issueId/maintenance-updates',
-      {
-        'description': description,
-        'proofPhotoUrls': proofPhotoUrls,
-      },
-      Issue.fromJson,
-    );
-  }
+  ) => throw UnimplementedError();
 
-  /// Invitation endpoints
+  // Invitations
 
-  /// Returns an active [Invitation] by its [token], including the pre-assigned
-  /// address and housing name. Throws [InvitationNotFoundException] if the
-  /// token is invalid or expired.
-  Future<Invitation> getInvitationByToken(String token) async {
-    throw UnimplementedError();
-  }
+  Future<Invitation> getInvitationByToken(String token) => throw UnimplementedError();
 
-  /// Creates an invitation for [addressId] and returns it with address details.
-  Future<Invitation> createInvitation(String addressId) async {
-    throw UnimplementedError();
-  }
+  Future<Invitation> createInvitation(String addressId) => throw UnimplementedError();
 
-  /// Cancels an invitation by setting its [cancelled_at] timestamp.
-  Future<void> cancelInvitation(String invitationId) async {
-    throw UnimplementedError();
-  }
+  Future<void> cancelInvitation(String invitationId) => throw UnimplementedError();
 
-  /// Returns active (non-expired, non-cancelled) invitations for [housingId].
-  Future<List<Invitation>> getHousingInvitations(String housingId) async {
-    throw UnimplementedError();
-  }
+  Future<List<Invitation>> getHousingInvitations(String housingId) =>
+      throw UnimplementedError();
 
-  /// Assigns [addressId] and [housingId] to the tenant [userId].
-  /// Called after OTP verification to finalise an invitation claim.
   Future<void> claimInvitation({
     required String userId,
     required String email,
     required String housingId,
     required String addressId,
     String? phoneNumber,
-  }) async {
-    throw UnimplementedError();
-  }
+  }) => throw UnimplementedError();
 
-  /// Returns all tenant profiles currently registered at [addressId].
-  Future<List<TenantProfile>> getAddressTenants(String addressId) async {
-    return _getList(
-      '/addresses/$addressId/tenants',
-      TenantProfile.fromJson,
-    );
-  }
+  Future<List<TenantProfile>> getAddressTenants(String addressId) =>
+      throw UnimplementedError();
 
-  /// Admin endpoints
-  Future<Issue> markNeedsAssistance(String issueId) async {
-    return _patch(
-      '/issues/$issueId',
-      {'needAssistance': true},
-      Issue.fromJson,
-    );
-  }
+  // Admin
 
-  Future<TenantProfile> markTenantMovedOut(
-    String tenantId,
-    String addressId,
-  ) async {
-    return _patch(
-      '/tenants/$tenantId/addresses/$addressId/mark-moved-out',
-      {},
-      TenantProfile.fromJson,
-    );
-  }
+  Future<Issue> markNeedsAssistance(String issueId) => throw UnimplementedError();
+
+  Future<TenantProfile> markTenantMovedOut(String tenantId, String addressId) =>
+      throw UnimplementedError();
 }
 
 class ApiException implements Exception {

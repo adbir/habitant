@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Centers [child] in a 1920 px-capped column on large screens.
-///
-/// Below [_breakpoint] (840 px) the child is returned as-is. Above it the
-/// child sits in a three-column Row: two equal [Spacer]s flank a [SizedBox]
-/// whose width is clamped to [_maxContentWidth]. Both flanking columns are
-/// invisible; only the gutters beyond 1920 px are ever visible.
+/// Constrains [child] to 1920 px on large screens; returned as-is below 840 px.
 class AdaptiveLayout extends StatelessWidget {
   final Widget child;
 
@@ -19,16 +14,11 @@ class AdaptiveLayout extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth < _breakpoint) return child;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Spacer(),
-            SizedBox(
-              width: constraints.maxWidth.clamp(0.0, _maxContentWidth),
-              child: child,
-            ),
-            const Spacer(),
-          ],
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: _maxContentWidth),
+            child: child,
+          ),
         );
       },
     );

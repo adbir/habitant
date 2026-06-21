@@ -27,7 +27,7 @@ import '../core/services/api_client.dart';
 ///   admin@aab.dk        — admin
 ///   tech@aab.dk         — maintenanceStaff
 class FakeApiClient extends ApiClient {
-  FakeApiClient() : super(baseUrl: 'fake://');
+  FakeApiClient() : super();
 
   static const _uuid = Uuid();
   static const _networkDelay = Duration(milliseconds: 100);

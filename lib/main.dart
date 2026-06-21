@@ -16,8 +16,6 @@ import 'dev/fake_auth_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
-
   final AuthService authService;
   final ApiClient apiClient;
   if (kDebugMode) {
@@ -25,6 +23,7 @@ void main() async {
     apiClient = fakeApi;
     authService = FakeAuthService(fakeApi);
   } else {
+    await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
     apiClient = SupabaseApiClient();
     authService = SupabaseAuthService();
   }

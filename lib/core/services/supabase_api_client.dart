@@ -19,7 +19,7 @@ import 'api_client.dart';
 /// All data queries use the Supabase PostgREST client; row-level security
 /// on the database enforces access control automatically.
 class SupabaseApiClient extends ApiClient {
-  SupabaseApiClient() : super(baseUrl: '');
+  SupabaseApiClient() : super();
 
   static SupabaseClient get _client => Supabase.instance.client;
 
